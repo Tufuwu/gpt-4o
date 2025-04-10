@@ -1,2 +1,1 @@
-# dev
-chardet
+dnspython==1.16.0
