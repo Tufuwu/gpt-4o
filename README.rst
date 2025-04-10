@@ -1,238 +1,123 @@
-============
-docformatter
-============
+===================
+pytest-deadfixtures
+===================
 
-Formats docstrings to follow `PEP 257`_.
+.. image:: https://img.shields.io/badge/code%20style-black-000000.svg
+    :target: https://github.com/python/black
+    :alt: Black
 
-.. _`PEP 257`: http://www.python.org/dev/peps/pep-0257/
+.. image:: https://travis-ci.org/jllorencetti/pytest-deadfixtures.svg?branch=main
+    :target: https://travis-ci.org/jllorencetti/pytest-deadfixtures
+    :alt: See Build Status on Travis CI
 
-.. image:: https://travis-ci.org/myint/docformatter.svg?branch=master
-   :target: https://travis-ci.org/myint/docformatter
-   :alt: Build status
+A simple plugin to list unused or duplicated fixtures in a pytest suite.
 
+----
 
 Features
-========
+--------
 
-*docformatter* currently automatically formats docstrings to follow a
-subset of the PEP 257 conventions. Below are the relevant items quoted
-from PEP 257.
-
-- For consistency, always use triple double quotes around docstrings.
-- Triple quotes are used even though the string fits on one line.
-- Multi-line docstrings consist of a summary line just like a one-line
-  docstring, followed by a blank line, followed by a more elaborate
-  description.
-- Unless the entire docstring fits on a line, place the closing quotes
-  on a line by themselves.
-
-docformatter also handles some of the PEP 8 conventions.
-
-- Don't write string literals that rely on significant trailing
-  whitespace. Such trailing whitespace is visually indistinguishable
-  and some editors (or more recently, reindent.py) will trim them.
+* List unused fixtures in your tests
+* List duplicated fixtures
 
 
 Installation
-============
+------------
 
-From pip::
+You can install "pytest-deadfixtures" via `pip`_ from `PyPI`_::
 
-    $ pip install --upgrade docformatter
+    $ pip install pytest-deadfixtures
 
+Usage
+-----
 
-Example
-=======
+Important
+*********
 
-After running::
+The `--dead-fixtures` option will not run your tests and it's also sensible for errors in the pytest collection step.
+If you are using as part of you CI process the recommended way is to run it after the default test run. For example::
 
-    $ docformatter --in-place example.py
-
-this code
-
-.. code-block:: python
-
-    """   Here are some examples.
-
-        This module docstring should be dedented."""
+    script:
+      - pytest
+      - pytest --dead-fixtures
 
 
-    def launch_rocket():
-        """Launch
-    the
-    rocket. Go colonize space."""
+Listing unused fixtures
+***********************
+
+Just run 'pytest' with an extra option '--dead-fixtures'::
+
+    $ pytest --dead-fixtures
+    ============================= test session starts ==============================
+    (hidden for brevity)
+
+    Hey there, I believe the following fixture(s) are not being used:
+    Fixture name: some_fixture, location: test_write_docs_when_verbose.py:5
+
+    ========================= no tests ran in 0.00 seconds =========================
+
+Using some level of verbosity will also print the docstring of each fixture::
+
+    $ pytest --dead-fixtures -v
+    ============================= test session starts ==============================
+    (hidden for brevity)
+
+    Hey there, I believe the following fixture(s) are not being used:
+    Fixture name: some_fixture, location: test_write_docs_when_verbose.py:5
+        Blabla fixture docs
+
+    ========================= no tests ran in 0.00 seconds =========================
+
+Listing repeated fixtures
+*************************
+
+Now that you removed every unused fixture of your test suite, what if you want to go an extra mile?
+
+An important note about this is that it uses the fixture return value to verify if two or more fixtures are equal.
+
+This means **fixtures without a truthy return value will be skipped**.
+
+You should use this as a hint only, verify that the functionality provided by both fixtures are really repeated before deleting one of them.
+
+Just run 'pytest' with an extra option '--dup-fixtures', unlike the '--dead-fixtures' option, it'll normally run you tests::
+
+    $ pytest --dup-fixtures
+    ======================================================================================================================== test session starts ========================================================================================================================
+    (hidden for brevity)
+
+    tests/test_deadfixtures.py ........
+
+    You may have some duplicate fixtures:
+    Fixture name: someclass_fixture, location: test_repeated_fixtures.py:12
+    Fixture name: someclass_samefixture, location: test_repeated_fixtures.py:17
 
 
-    def factorial(x):
-        '''
+Projects using it
+-----------------
 
-        Return x factorial.
+- `wemake-django-template`_
 
-        This uses math.factorial.
+Contributing
+------------
+Contributions are very welcome. Tests can be run with `tox`_, please ensure
+the coverage at least stays the same before you submit a pull request.
 
-        '''
-        import math
-        return math.factorial(x)
-
-
-    def print_factorial(x):
-        """Print x factorial"""
-        print(factorial(x))
-
-
-    def main():
-        """Main
-        function"""
-        print_factorial(5)
-        if factorial(10):
-            launch_rocket()
-
-
-gets formatted into this
-
-.. code-block:: python
-
-    """Here are some examples.
-
-    This module docstring should be dedented.
-    """
-
-
-    def launch_rocket():
-        """Launch the rocket.
-
-        Go colonize space.
-        """
-
-
-    def factorial(x):
-        """Return x factorial.
-
-        This uses math.factorial.
-        """
-        import math
-        return math.factorial(x)
-
-
-    def print_factorial(x):
-        """Print x factorial."""
-        print(factorial(x))
-
-
-    def main():
-        """Main function."""
-        print_factorial(5)
-        if factorial(10):
-            launch_rocket()
-
-
-Options
-=======
-
-Below is the help output::
-
-    usage: docformatter [-h] [-i | -c] [-r] [--wrap-summaries length]
-                        [--wrap-descriptions length] [--blank]
-                        [--pre-summary-newline] [--make-summary-multi-line]
-                        [--force-wrap] [--range line line] [--version]
-                        files [files ...]
-
-    Formats docstrings to follow PEP 257.
-
-    positional arguments:
-      files                 files to format or '-' for standard in
-
-    optional arguments:
-      -h, --help            show this help message and exit
-      -i, --in-place        make changes to files instead of printing diffs
-      -c, --check           only check and report incorrectly formatted files
-      -r, --recursive       drill down directories recursively
-      -e, --exclude         exclude directories and files by names
-
-      --wrap-summaries length
-                            wrap long summary lines at this length; set to 0 to
-                            disable wrapping (default: 79)
-      --wrap-descriptions length
-                            wrap descriptions at this length; set to 0 to disable
-                            wrapping (default: 72)
-      --blank               add blank line after description
-      --pre-summary-newline
-                            add a newline before the summary of a multi-line
-                            docstring
-      --make-summary-multi-line
-                            add a newline before and after the summary of a one-
-                            line docstring
-      --force-wrap          force descriptions to be wrapped even if it may result
-                            in a mess
-      --range line line     apply docformatter to docstrings between these lines;
-                            line numbers are indexed at 1
-      --version             show program's version number and exit
-
-
-Possible exit codes:
-
-- **1** - if any error encountered
-- **3** - if any file needs to be formatted (in ``--check`` mode)
-
-Wrapping descriptions
-=====================
-
-docformatter will wrap descriptions, but only in simple cases. If there is text
-that seems like a bulleted/numbered list, docformatter will leave the
-description as is::
-
-    - Item one.
-    - Item two.
-    - Item three.
-
-This prevents the risk of the wrapping turning things into a mess. To force
-even these instances to get wrapped use ``--force-wrap``.
-
-
-Integration
-===========
-
-Git Hook
---------
-
-*docformatter* is configured for `pre-commit`_ and can be set up as a hook with the following ``.pre-commit-config.yaml`` configuration:
-
-.. _`pre-commit`: https://pre-commit.com/
-
-.. code-block:: yaml
-
-  - repo: https://github.com/myint/docformatter
-    rev: v1.3.1
-    hooks:
-      - id: docformatter
-        args: [--in-place]
-
-You will need to install ``pre-commit`` and run ``pre-commit install``.
-
-You may alternatively use  ``args: [--check]`` if you prefer the commit to fail instead of letting *docformatter* format  docstrings automatically.
-
-PyCharm
+License
 -------
 
-*docformatter* can be configured as a PyCharm file watcher to automatically format docstrings on saving python files.
-
-Head over to ``Preferences > Tools > File Watchers``, click the ``+`` icon and configure *docformatter* as shown below:
-
-.. image:: /images/pycharm-file-watcher-configurations.png
-   :alt: PyCharm file watcher configurations
+Distributed under the terms of the `MIT`_ license, 'pytest-deadfixtures' is free and open source software
 
 
 Issues
-======
+------
 
-Bugs and patches can be reported on the `GitHub page`_.
+If you encounter any problems, please `file an issue`_ along with a detailed description.
 
-.. _`GitHub page`: https://github.com/myint/docformatter/issues
-
-
-Links
-=====
-
-* Coveralls_
-
-.. _`Coveralls`: https://coveralls.io/r/myint/docformatter
+.. _`@jllorencetti`: https://github.com/jllorencetti
+.. _`MIT`: http://opensource.org/licenses/MIT
+.. _`file an issue`: https://github.com/jllorencetti/pytest-deadfixtures/issues
+.. _`pytest`: https://github.com/pytest-dev/pytest
+.. _`tox`: https://tox.readthedocs.io/en/latest/
+.. _`pip`: https://pypi.python.org/pypi/pip/
+.. _`PyPI`: https://pypi.python.org/pypi
+.. _`wemake-django-template`: https://github.com/wemake-services/wemake-django-template

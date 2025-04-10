@@ -1,48 +1,75 @@
-#!/usr/bin/env python
+import codecs
+import os
+import re
 
-"""Setup for docformatter."""
+from setuptools import Command, setup
 
-from __future__ import (absolute_import,
-                        division,
-                        print_function,
-                        unicode_literals)
-
-import ast
-from pathlib import Path
-
-from setuptools import setup
+BASE_PATH = os.path.abspath(os.path.dirname(__file__))
 
 
-def version():
-    """Return version string."""
-    with open('docformatter.py') as input_file:
-        for line in input_file:
-            if line.startswith('__version__'):
-                return ast.parse(line).body[0].value.s
+def read(fname):
+    file_path = os.path.join(os.path.dirname(__file__), fname)
+    return codecs.open(file_path, encoding="utf-8").read()
 
 
-setup(name='docformatter',
-        version=version(),
-        description='Formats docstrings to follow PEP 257.',
-        long_description=Path('README.rst').read_text(),
-        license='Expat License',
-        author='Steven Myint',
-        url='https://github.com/myint/docformatter',
-        classifiers=['Intended Audience :: Developers',
-                    'Environment :: Console',
-                    'Programming Language :: Python :: 3',
-                    'Programming Language :: Python :: 3.6',
-                    'Programming Language :: Python :: 3.7',
-                    'Programming Language :: Python :: 3.8',
-                    'Programming Language :: Python :: 3.9',
-                    'Programming Language :: Python :: 3.10',
-                    'Programming Language :: Python :: Implementation',
-                    'Programming Language :: Python :: Implementation :: PyPy',
-                    'Programming Language :: Python :: Implementation :: CPython',
-                    'License :: OSI Approved :: MIT License'],
-        keywords='PEP 257, pep257, style, formatter, docstrings',
-        py_modules=['docformatter'],
-        entry_points={
-            'console_scripts': ['docformatter = docformatter:main']},
-        install_requires=['untokenize'],
-        test_suite='test_docformatter')
+def get_version():
+    changes_path = os.path.join(BASE_PATH, "CHANGES.rst")
+    regex = r"^#*\s*(?P<version>[0-9]+\.[0-9]+(\.[0-9]+)?)$"
+    with codecs.open(changes_path, encoding="utf-8") as changes_file:
+        for line in changes_file:
+            res = re.match(regex, line)
+            if res:
+                return res.group("version")
+    return "0.0.0"
+
+
+version = get_version()
+
+
+class VersionCommand(Command):
+    description = "print current library version"
+    user_options = []
+
+    def initialize_options(self):
+        pass
+
+    def finalize_options(self):
+        pass
+
+    def run(self):
+        print(version)
+
+
+setup(
+    name="pytest-deadfixtures",
+    version=version,
+    author="João Luiz Lorencetti",
+    author_email="me@dirtycoder.net",
+    maintainer="João Luiz Lorencetti",
+    maintainer_email="me@dirtycoder.net",
+    license="MIT",
+    url="https://github.com/jllorencetti/pytest-deadfixtures",
+    description="A simple plugin to list unused fixtures in pytest",
+    long_description=read("README.rst"),
+    py_modules=["pytest_deadfixtures"],
+    install_requires=["pytest>=3.0.0"],
+    classifiers=[
+        "Development Status :: 5 - Production/Stable",
+        "Framework :: Pytest",
+        "Intended Audience :: Developers",
+        "Topic :: Software Development :: Testing",
+        "Programming Language :: Python",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: Implementation :: CPython",
+        "Programming Language :: Python :: Implementation :: PyPy",
+        "Operating System :: OS Independent",
+        "License :: OSI Approved :: MIT License",
+    ],
+    cmdclass={"version": VersionCommand},
+    entry_points={"pytest11": ["deadfixtures = pytest_deadfixtures"]},
+)
