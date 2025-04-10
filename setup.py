@@ -1,28 +1,39 @@
-import setuptools
+#!/usr/bin/env python
+"""Installation script."""
+try:
+    from setuptools import setup
+except ImportError:
+    from distutils.core import setup
 
-from tinytuya import __version__
+import ast
+import codecs
+import os
+import re
 
-with open("README.md", "r") as fh:
-    long_description = fh.read()
 
-setuptools.setup(
-    name="tinytuya",
-    version=__version__,
-    author="Jason Cox",
-    author_email="jason@jasonacox.com",
-    description="Python module to interface with Tuya WiFi smart devices",
-    long_description=long_description,
+CURRENT_DIR = os.path.dirname(__file__)
+
+
+def get_long_description():
+    readme_path = os.path.join(CURRENT_DIR, "README.md")
+    with codecs.open(readme_path, encoding="utf8") as ld_file:
+        return ld_file.read()
+
+
+def get_version():
+    pydot_py = os.path.join(CURRENT_DIR, "src", "pydot", "__init__.py")
+    _version_re = re.compile(r"__version__\s+=\s+(?P<version>.*)")
+    with codecs.open(pydot_py, "r", encoding="utf8") as f:
+        match = _version_re.search(f.read())
+        version = match.group("version") if match is not None else '"unknown"'
+    return str(ast.literal_eval(version))
+
+
+setup(
+    name="pydot",
+    version=get_version(),
+    package_dir={"": "src"},
+    packages=["pydot"],
+    long_description=get_long_description(),
     long_description_content_type="text/markdown",
-    url='https://github.com/jasonacox/tinytuya',
-    packages=setuptools.find_packages(),
-    install_requires=[
-        'pycryptodome',  # Encryption - AES can also be provided via PyCrypto or pyaes
-        'requests',      # Used for Setup Wizard - Tuya IoT Platform calls
-    ],
-    classifiers=[
-        "Programming Language :: Python :: 2",
-        "Programming Language :: Python :: 3",
-        "License :: OSI Approved :: MIT License",
-        "Operating System :: OS Independent",
-    ],
 )
