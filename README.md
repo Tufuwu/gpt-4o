@@ -1,258 +1,168 @@
-[![Build Status](https://travis-ci.org/edio/randrctl.svg?branch=master)](https://travis-ci.org/edio/randrctl)
+Census Geocode
+--------------
 
-# randrctl
+Census Geocode is a light weight Python wrapper for the US Census [Geocoder API](http://geocoding.geo.census.gov/geocoder/), compatible with  Python 3. It comes packaged with a simple command line tool for geocoding an address to a longitude and latitude, or a batch file into a parsed address and coordinates.
 
-Screen profiles manager for X.org.
+It's strongly recommended to review the [Census Geocoder docs](https://www.census.gov/programs-surveys/geography/technical-documentation/complete-technical-documentation/census-geocoder.html) before using this module.
 
-_randrctl_ remembers your X.org screen configurations (position of displays, rotation, scaling, etc.) and switches
-between them automatically as displays are connected or manually, when necessary:
-```
-randrctl switch-to home
-randrctl switch-to office
-```
+Basic example:
 
-## Install
+```python
+import censusgeocode as cg
 
-_randrctl_ depends on `xrandr` utility and won't work without it. Please install it first.
-
-### Archlinux
-
-https://aur.archlinux.org/packages/randrctl-git/
-https://aur.archlinux.org/packages/randrctl/
-
-```
-$ randrctl setup config > ${XDG_CONFIG_HOME:-$HOME/.config}/randrctl/config.yaml
+cg.coordinates(x=-76, y=41)
+cg.onelineaddress('1600 Pennsylvania Avenue, Washington, DC')
+cg.address('1600 Pennsylvania Avenue', city='Washington', state='DC', zip='20006')
+cg.addressbatch('data/addresses.csv')
 ```
 
-### PyPi
-
-```
-# pip install randrctl
-
-# randrctl setup udev > /etc/udev/rules.d/99-randrctl.rules
-# randrctl setup completion > /usr/share/bash-completion/completions/randrctl
-
-$ randrctl setup config > ${XDG_CONFIG_HOME:-$HOME/.config}/randrctl/config.yaml
+Use the returntype keyword to specify 'locations' or 'geographies'. 'Locations' yields structured information about the address, and 'geographies' yields information about the Census geographies. Geographies is the default.
+```python
+cg.onelineaddress('1600 Pennsylvania Avenue, Washington, DC', returntype='locations')
 ```
 
-### Manually from sources
+Queries return a CensusResult object, which is basically a Python list with an extra 'input' property, which the Census returns to tell you how they interpreted your request.
 
-```
-$ git clone https://github.com/edio/randrctl.git
-$ cd randrctl
-
-# python setup.py install
-
-# randrctl setup udev > /etc/udev/rules.d/99-randrctl.rules
-# randrctl setup completion > /usr/share/bash-completion/completions/randrctl
-
-$ randrctl setup config > ${XDG_CONFIG_HOME:-$HOME/.config}/randrctl/config.yaml
-```
-
-## Usage
-
-Usage is very simple:
-
-0. Setup your screen to suit your needs (randrctl does not handle that)
-
-1. Dump settings with randrctl to a named profile
-
-  ```randrctl dump -e home```
-
-2. Re-apply those settings, whenever you need them
-
-  ```randrctl switch-to home```
-
-3. ... or let randrctl to inspect currently connected displays and choose profile that fits them best
-
-  ```randrctl auto```
-
-  Auto-switching will also happen automatically if provided udev rules are installed to the system.
-  
-4. For more info on usage refer to help
-
-  ```randrctl --help```
-
-### Auto-switching<a name="auto"></a>
-
-```randrctl``` can associate profile with currently connected displays and switch to this profile automatically whenever
-same (or similar) set of displays is connected.
-
-Profile is matched to the set of connected displays by evaluating one or more of the following rules for every connected
-display:
-
-* list of supported modes of connected display includes the current mode
-
-  ```randrctl dump -m profile1```
-
-  You can use this to create profile that is activated whenever connected display supports the mode that is currently
-  set for that output.
-
-* preferred mode of connected display is the current mode
-
-  ```randrctl dump -p profile2```
-
-  Display can support wide range of modes from 640x480 to 1920x1200, but prefer only one of those. When dumped this way,
-  profile is considered a match if connected display prefers the mode, that is currently set for it.
-
-* unique identifier of connected display is exactly tha same
-
-  ```randrctl dump -e profile3```
-
-  Unique identifier (edid) of every display is dumped with the profile, so it matches, only if exactly same displays
-  are connected.
-
-Naturally, the more specific the rule, the bigger weight it has, so in case if you invoked those 3 dump commands above
-with the same displays connected, `profile3` will be chosen as the best (i.e. the most specific) match.
-
-It is possible to specify any combination of `-m -p -e` keys to dump command. In this case randrctl will try to match
-all the rules combining them with logical AND (for example, display must support and at the same time prefer the mode).
-Although such combination of rules might seem redundant (because if the more specific rule matches, the more generic
-will do too), it might have sense if rule is edited manually.
-
-If `randrctl dump` is invoked without additional options, it dumps only screen setup, so profile won't be considered
-during auto-switching.
-
-
-### Prior/Post hooks
-
-randrctl can execute custom commands (hooks) before and after switching to profile or if switching fails. Hooks are
-specified in config file `$XDG_CONFIG_HOME/randrctl/config.yaml`
-
-```
-hooks:
-    prior_switch: /usr/bin/killall -SIGSTOP i3
-    post_switch: /usr/bin/killall -SIGCONT i3 && /usr/bin/notify-send -u low "randrctl" "switched to $randr_profile"
-    post_fail: /usr/bin/killall -SIGCONT i3 && /usr/bin/notify-send -u critical "randrctl error" "$randr_error"
+```python
+>>> result = cg.coordinates(x=-76, y=41)
+>>> result.input
+{
+    u'vintage': {
+        u'vintageName': u'Current_Current',
+        u'id': u'4',
+        u'vintageDescription': u'Current Vintage - Current Benchmark',
+        u'isDefault': True
+    },
+    u'benchmark': {
+        u'benchmarkName': u'Public_AR_Current',
+        u'id': u'4',
+        u'isDefault': False,
+        u'benchmarkDescription': u'Public Address Ranges - Current Benchmark'
+    },
+    u'location': {
+        u'y': 41.0,
+        u'x': -76.0
+    }
+}
+>>> result
+[{
+    '2010 Census Blocks': [{
+        'AREALAND': 1409023,
+        'AREAWATER': 0,
+        'BASENAME': '1045',
+        'BLKGRP': '1',
+        'BLOCK': '1045',
+        'CENTLAT': '+40.9957436',
+        'CENTLON': '-076.0089338',
+        'COUNTY': '079',
+        'FUNCSTAT': 'S',
+        'GEOID': '420792166001045',
+        'INTPTLAT': '+40.9957436',
+        'INTPTLON': '-076.0089338',
+        'LSADC': 'BK',
+        'LWBLKTYP': 'L',
+        'MTFCC': 'G5040',
+        'NAME': 'Block 1045',
+        'OBJECTID': 9940449,
+        'OID': 210404020212114,
+        'STATE': '42',
+        'SUFFIX': '',
+        'TRACT': '216600'
+    }],
+    'Census Tracts': [{
+        # snip 
+        'NAME': 'Census Tract 2166',
+        'OBJECTID': 61245,
+        'OID': 20790277158250,
+        'STATE': '42',
+        'TRACT': '216600'
+    }],
+    'Counties': [{
+        # snip
+        'NAME': 'Luzerne County',
+        'OBJECTID': 866,
+        'OID': 27590277115518,
+        'STATE': '42'
+    }],
+    'States': [{
+        # snip
+        'NAME': 'Pennsylvania',
+        'REGION': '1',
+        'STATE': '42',
+        'STATENS': '01779798',
+        'STUSAB': 'PA'
+    }]
+}]
 ```
 
-The typical use-case of this is displaying desktop notification with libnotify.
+### Advanced
 
-I also use it to pause i3 window manager as it was known to crash sometimes during the switch.
+By default, the geocoder uses the "Current" vintage and benchmarks. To use another vintage or benchmark, use the `CensusGeocode` class:
+````python
+from censusgeocode import CensusGeocode
+cg = CensusGeocode(benchmark='Public_AR_Current', vintage='Census2020_Current')
+cg.onelineaddress(foobar)
+````
 
+The Census may update the available benchmarks and vintages. Review the Census Geocoder docs for the currently available [benchmarks](https://geocoding.geo.census.gov/geocoder/benchmarks) and [vintages](https://geocoding.geo.census.gov/geocoder/vintages?form).
 
-### Profile format
+## Command line tool
 
-Profile is a simple text file in YAML format. It can be edited manually, however it is rarely required in practice
-because `randrctl dump` handles most common cases.
+The `censusgeocode` tool has two settings.
 
+At the simplest, it takes one argument, an address, and returns a comma-delimited longitude, latitude pair.
+````bash
+censusgeocode '100 Fifth Avenue, New York, NY'
+-73.992195,40.73797
+
+censusgeocode '1600 Pennsylvania Avenue, Washington DC'
+-77.03535,38.898754
+````
+
+The Census geocoder is reasonably good at recognizing non-standard addresses.
+````bash
+censusgeocode 'Hollywood & Vine, LA, CA'
+-118.32668,34.101624
+````
+
+It can also use the Census Geocoder's batch function to process an entire file. The file must be comma-delimited, have no header, and include the following columns:
+````
+unique id, street address, state, city, zip code
+````
+
+The geocoder can read from a file:
+````
+censusgeocode --csv tests/fixtures/batch.csv
+````
+([example file](https://github.com/fitnr/censusgeocode/blob/master/tests/fixtures/batch.csv))
+
+Or from stdin, using `-` as the filename:
+````
+head tests/fixtures/batch.csv | censusgeocode --csv -
+````
+
+According to the Census docs, the batch geocoder is limited to 10,000 rows.
+
+The output will be a CSV file (with a header) and the columns:
+* id
+* address
+* match
+* matchtype
+* parsed
+* tigerlineid
+* side
+* lat
+* lon
+
+If your data doesn't have a unique id, try adding line numbers with the Unix command line utility `nl`:
 ```
-match:
-    LVDS1: {}
-    DP1:
-        prefers: 1920x1080
-outputs:
-    LVDS1:
-        mode: 1366x768
-        panning: 1366x1080
-    DP1:
-        mode: 1920x1080
-        pos: 1366x0
-        rotate: inverted
-primary: DP1
-```
-
-Profile is required to contain 2 sections (`outputs` and `primary`). That is what dumped when `randrctl dump` is invoked
-without additional options.
-
-The `match` section is optional and is dumped only when one of the auto-switching rules is specified.
-
-
-#### Outputs
-
-Each property of `outputs` section references output as seen in xrandr (i.e. *DP1*, *HDMI2*, etc.). Meaning of the
-properties is the same as in the xrandr utility.
-
-`mode` is mandatory, the others may be omitted.
-
-```
-DP1-2: 
-    mode: 1920x1200
-    panning: 2496x1560+1920+0
-    pos: 1920x0
-    rate: 60
-    rotate: normal
-    scale: 1.3x1.3
-```
-
-
-#### Primary
-
-Name of the primary output as seen in xrandr.
-
-```
-primary: eDP1
-```
-
-#### Match
-
-Set of rules for auto-switching.
-
-The minimum rule is
-
-```
-HDMI1: {}
+nl -s , input.csv | censusgeocode --csv - > output.csv
 ```
 
-which means, that something must be connected to that output.
+## License
 
-Rule corresponding to `randrctl dump -m` would be
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
-```
-HDMI1:
-    supports: 1920x1080
-```
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-`randrctl dump -p` is
-
-```
-HDMI1:
-    prefers: 1920x1080
-```
-
-and `randrctl dump -e` is
-
-```
-HDMI1:
-    edid: efdbca373951c898c5775e1c9d26c77f
-```
-
-`edid` is md5 hash of actual display's `edid`. To obtain that value, use `randrctl show`.
-
-As was mentioned, `prefers`, `supports` and `edid` can be combined in the same rule, so it is possible to manually
-create a more sophisticated rule
-
-```
-match:
-    LVDS1: {}
-    HDMI1:
-        prefers: 1600x1200
-        supports: 800x600
-outputs:
-    LVDS1: 
-        ...
-    HDMI1:
-        ...
-```
-
-#### Priority
-
-When more than one profile matches current output configuration priority can be used to highlight preferred profile.
-```
-priority: 100
-match:
-    ...
-outputs:
-    ...
-```
-Default priority is `100`. To set profile priority use `-P <priority>` with `dump` command. Like this:
-`randrctl dump -e default -P 50`
-
-## Develop
-
-### Run tests
-
-```
-$ python setup.py test
-```
-
+You should have received a copy of the GNU General Public License along with this program.  If not, see http://www.gnu.org/licenses/.
