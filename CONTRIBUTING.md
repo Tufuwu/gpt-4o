@@ -1,84 +1,58 @@
-# isodatetime: How to Contribute
+# Contributing to MTGJSON
 
-## Report Bugs
+First off, thanks for taking the time to read this document! It means something to us that you're potentially interested in helping improve our project.
 
-Report bugs and request enhancement by opening an issue on
-[isodatetime issues @ Github](https://github.com/metomi/isodatetime/issues).
-If reporting a bug, add a recipe for repeating it.
-If requesting an enhancement, describe the use case in detail.
+Our goal for MTGJSON was and is to provide free and easily accessible Magic: the Gathering data for those who want and/or need it.
 
-## Contribute Code
+If you're not a software developer, but want to help the project in some way, we are always looking for individuals to audit the content we provide. We also accept financial contributions to the project via [PayPal](https://www.paypal.me/zachhalpern) and [Patreon](https://patreon.com/mtgjson).
 
-All contributions to isodatetime are made via pull requests against the *master*
-branch of [metomi/isodatetime](https://github.com/metomi/isodatetime).
-New contributors should add their details to the [Code Contributors](#code-contributors)
-section of this file as part of their first request.
+## Environment Setup
 
-The developer who reviews each pull request is responsible for checking that
-the contributor's name is listed in this file before merging the pull request
-into *master*.
+Here at MTGJSON, we recommend all of our developers check out [PyCharm](https://jetbrains.com/pycharm/). While any IDE or notepad can be used, we found that the JetBrains environment is intuitive and easy to understand.
 
-## Code Contributors
+In addition to PyCharm, you'll need to install Python 3. We develop actively on the latest release of Python, but aim for compatibility with Python 3.6.
 
-The following people have contributed to this code under the terms of
-the Contributor Licence Agreement and Certificate of Origin detailed
-below:
+- Mac: `brew install python3`
+- Linux: `sudo apt-get install python3.7`
+- Windows: [Download Python 3](https://www.python.org/downloads/)
 
-* Ben Fitzpatrick (Met Office, UK)
-* Andrew Clark (Met Office, UK)
-* Oliver Sanders (Met Office, UK)
-* Matt Shin (Met Office, UK)
-* Hilary Oliver (NIWA, NZ)
-* Lois Huggett (Met Office, UK)
-* Bruno P. Kinoshita (NIWA, NZ)
-* Tim Pillinger (Met Office, UK)
-* Uwe L. Korn (DE)
-* Mel Hall (Met Office, UK)
-* Ronnie Dutta (Met Office, UK)
+### Python venv
 
+If you want to work in a venv, you may follow this commands:
+* `python3.7 -m venv venv`
+  * Use another `python` binary to use it's respective version
+* `source venv/bin/activate`
+* `pip install -r requirements.txt`
+* `pip install -r requirements_test.txt`
+* `cp mtgjson.properties.example mtgjson5/resources/mtgjson.properties`
+* Fill in your credentials into `mtgjson5/resources/mtgjson.properties`
+  * Missing credentials won't fail the run, just extend the generated data
+* `python -m mtgjson5`
 
-(All contributors are identifiable with email addresses in the version control
-logs or otherwise.)
+## Project Hierarchy
+The codebase is split up into different files based on functionality. While not perfect, we aim to segregate components based on their usages and dependencies.
 
-## Contributor Licence Agreement and Certificate of Origin
+- `provider/`  is where we put code for each 3rd party resource we need to contact in order to collate our data. Each source should be given its own folder and should not be dependent on any other provider.
+- `resources/` is where we put MTGJSON corrections, fixes, and hard caches. These are data points we want to include, but can't grab from an external entity easily or without causing a circular loop.
+- `__main__.py` is where we define our globals for the project. TODO is to re-write them into their own class.
+- `compile_mtg.py` is the main functionality of the project, where we handle turning data blobs into MTGJSON cards and sets.
+- `compressor.py` is where we compress completed outputs for release.
+- `outputter.py` is where all I/O operations should take place. All write to disk calls should be done from here.
+- `util.py` are common utilities that may be used across the codebase.
 
-By making a contribution to this project, I certify that:
+## Code Style & Testing
 
-(a) The contribution was created in whole or in part by me and I have
-    the right to submit it, either on my behalf or on behalf of my
-    employer, under the terms and conditions as described by this file;
-    or
+We follow the [black](https://pypi.org/project/black/) style guides, a stricter version of [PEP-8](https://www.python.org/dev/peps/pep-0008/) styling.
 
-(b) The contribution is based upon previous work that, to the best of
-    my knowledge, is covered under an appropriate licence and I have
-    the right or permission from the copyright owner under that licence
-    to submit that work with modifications, whether created in whole or
-    in part by me, under the terms and conditions as described by
-    this file; or
+To reformat your code and ensure compatibility with our system, simply run the Tox file found in the repo before you open up a pull request.
+- Before running Tox, you'll need to install the requirements
+    - `python3 install -r requirements_test.txt`
+- In PyCharm, simply right click on `tox.ini` and click "Run Tox"
 
-(c) The contribution was provided directly to me by some other person
-    who certified (a) or (b) and I have not modified it.
+You will need to pass all Tox requirements, including the unit tests, for your pull request to be approved.
 
-(d) I understand and agree that this project and the contribution
-    are public and that a record of the contribution (including my
-    name and email address) is retained for the full term of
-    the copyright and may be redistributed consistent with this project
-    or the licence(s) involved.
+## Communication Channels
 
-(e) I, or my employer, grant to the UK Met Office and all recipients of
-    this software a perpetual, worldwide, non-exclusive, no-charge,
-    royalty-free, irrevocable copyright licence to reproduce, modify,
-    prepare derivative works of, publicly display, publicly perform,
-    sub-licence, and distribute this contribution and such modifications
-    and derivative works consistent with this project or the licence(s)
-    involved or other appropriate open source licence(s) specified by
-    the project and approved by the
-    [Open Source Initiative (OSI)](http://www.opensource.org/).
+We communicate almost exclusively through [Discord](https://mtgjson.com/discord). Feel free to join us, whether you're a developer or not. We love chatting with the community!
 
-(f) If I become aware of anything that would make any of the above
-    inaccurate, in any way, I will let the UK Met Office know as soon as
-    I become aware.
-
-(The isodatetime Contributor Licence Agreement and Certificate of Origin is
-inspired by the Certificate of Origin used by Enyo and the Linux
-Kernel.)
+MTGJSON staff can be identified with a blue name, and our staff listing is found on the [website](https://mtgjson.com/).
