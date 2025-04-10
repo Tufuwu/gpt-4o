@@ -1,102 +1,105 @@
-================
-django-db-logger
-================
+|gh-test| |rtd| |pypi|
 
-.. image:: https://travis-ci.org/CiCiUi/django-db-logger.svg?branch=master
-    :target: https://travis-ci.org/CiCiUi/django-db-logger
+.. |gh-test| image:: https://github.com/RKrahl/pytest-dependency/actions/workflows/run-tests.yaml/badge.svg
+   :target: https://github.com/RKrahl/pytest-dependency/actions/workflows/run-tests.yaml
+   :alt: GitHub Workflow Status
+	 
+.. |rtd| image:: https://img.shields.io/readthedocs/pytest-dependency/latest
+   :target: https://pytest-dependency.readthedocs.io/en/latest/
+   :alt: Documentation build status
 
-Django logging in database.
-For large projects please use `Sentry <https://github.com/getsentry/sentry>`_
+.. |pypi| image:: https://img.shields.io/pypi/v/pytest-dependency
+   :target: https://pypi.org/project/pytest-dependency/
+   :alt: PyPI version
 
-Screenshot
-----------
-.. image:: https://ciciui.github.io/django-db-logger/static/img/django-db-logger.png
-    :target: https://travis-ci.org/CiCiUi/django-db-logger
+pytest-dependency – Manage dependencies of tests
+================================================
 
-Dependency
-----------
-* Django>=1.9
-* Python 2.7+/3.6+
-
-License
--------
-WTFPL
-
-Quick start
------------
-
-1. Install
-
-.. code-block:: bash
-
-    pip install django-db-logger
-
-2. Add "django_db_logger" to your ``INSTALLED_APPS`` setting like this
-
-.. code-block:: python
-
-    INSTALLED_APPS = (
-        ...
-        'django_db_logger',
-    )
-
-3. Add handler and logger to ``LOGGING`` setting like this
-
-.. code-block:: python
-
-    LOGGING = {
-        'version': 1,
-        'disable_existing_loggers': False,
-        'formatters': {
-            'verbose': {
-                'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
-            },
-            'simple': {
-                'format': '%(levelname)s %(asctime)s %(message)s'
-            },
-        },
-        'handlers': {
-            'db_log': {
-                'level': 'DEBUG',
-                'class': 'django_db_logger.db_log_handler.DatabaseLogHandler'
-            },
-        },
-        'loggers': {
-            'db': {
-                'handlers': ['db_log'],
-                'level': 'DEBUG'
-            }
-        }
-    }
-
-4. Run ``python manage.py migrate`` to create django-db-logger models.
-5. Use ``django-db-logger`` like this
-
-.. code-block:: python
-
-    import logging
-    db_logger = logging.getLogger('db')
-
-    db_logger.info('info message')
-    db_logger.warning('warning message')
-
-    try:
-        1/0
-    except Exception as e:
-        db_logger.exception(e)
+This pytest plugin manages dependencies of tests.  It allows to mark
+some tests as dependent from other tests.  These tests will then be
+skipped if any of the dependencies did fail or has been skipped.
 
 
+Download
+--------
 
-Options
--------
-1. DJANGO_DB_LOGGER_ADMIN_LIST_PER_PAGE: integer. list per page in admin view. default ``10``
-2. DJANGO_DB_LOGGER_ENABLE_FORMATTER: boolean. Using ``formatter`` options to format message. ``True`` or ``False``, default ``False``
+The latest release version can be found `at PyPI`__.
 
-Build your own database logger :hammer:
----------------------------------------
-1. Create a new app and add it to ``INSTALLED_APPS``
-2. Copy files ``django-db-logger/models.py``, ``django-db-logger/admin.py``, ``django-db-logger/db_log_handler.py`` to the app folder
-3. Replace ``DJANGO_DB_LOGGER_ADMIN_LIST_PER_PAGE`` in ``admin.py`` with an integer
-4. Replace ``DJANGO_DB_LOGGER_ENABLE_FORMATTER`` in `db_log_handler.py` with ``True`` or ``False``. Remove ``MSG_STYLE_SIMPLE``, it was not used.
-5. Replace logger class ``django_db_logger.db_log_handler.DatabaseLogHandler`` in your Settings with the new logger class
-6. Customize the looger to meet your needs. :beer:
+.. __: `PyPI site`_
+
+
+System requirements
+-------------------
+
++ Python 2.7 or 3.4 and newer.
++ `setuptools`_.
++ `pytest`_ 3.7.0 or newer.
+
+Optional library packages:
+
++ `setuptools_scm`_
+
+  The version number is managed using this package.  All source
+  distributions add a static text file with the version number and
+  fall back using that if `setuptools_scm` is not available.  So this
+  package is only needed to build out of the plain development source
+  tree as cloned from GitHub.
+
+
+Installation
+------------
+
+1. Download the sources, unpack, and change into the source directory.
+
+2. Build (optional)::
+
+     $ python setup.py build
+
+3. Test (optional)::
+
+     $ PYTHONPATH=build/lib python -m pytest tests
+
+4. Install::
+
+     $ python setup.py install
+
+The last step might require admin privileges in order to write into
+the site-packages directory of your Python installation.
+
+
+Documentation
+-------------
+
+See the `online documentation`__.
+
+The example test modules used in the documentation can be found in
+doc/examples in the source distribution.
+
+.. __: `Read the Docs site`_
+
+
+Copyright and License
+---------------------
+
+- Copyright 2013–2015
+  Helmholtz-Zentrum Berlin für Materialien und Energie GmbH
+- Copyright 2016–2020 Rolf Krahl
+
+Licensed under the Apache License, Version 2.0 (the "License"); you
+may not use this file except in compliance with the License.  You may
+obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+implied.  See the License for the specific language governing
+permissions and limitations under the License.
+
+
+.. _PyPI site: https://pypi.org/project/pytest-dependency/
+.. _setuptools: http://pypi.python.org/pypi/setuptools/
+.. _pytest: http://pytest.org/
+.. _setuptools_scm: https://github.com/pypa/setuptools_scm/
+.. _Read the Docs site: https://pytest-dependency.readthedocs.io/
