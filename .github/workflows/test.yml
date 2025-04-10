@@ -1,4 +1,4 @@
-name: CI
+name: Python application
 
 on:
   push:
@@ -18,18 +18,11 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
-
     - name: Install dependencies
-      run: |
-        ./scripts/install_radare2.sh
-        pip install -r python/requirements_ci.txt
-        cd python && ./setup.py install
-
+      run: make deps
     - name: Run tests
-      run: |
-        cd test && make tests
+      run: make test
