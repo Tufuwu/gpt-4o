@@ -1,46 +1,59 @@
-#!/usr/bin/env python
-from setuptools import setup, find_packages
-from entangled import __version__
+# -*- coding: utf-8 -*-
+from setuptools import setup
+import os
+import re
 
+# Lovingly adapted from https://github.com/kennethreitz/requests/blob/39d693548892057adad703fda630f925e61ee557/setup.py#L50-L55
+with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'pusher/version.py'), 'r') as fd:
+    VERSION = re.search(r'^VERSION = [\']([^\']*)[\']',
+                        fd.read(), re.MULTILINE).group(1)
 
-with open('README.md') as fh:
-    long_description = fh.read()
-
-
-CLASSIFIERS = [
-    'Development Status :: 5 - Production/Stable',
-    'Environment :: Web Environment',
-    'Framework :: Django',
-    'Intended Audience :: Developers',
-    'License :: OSI Approved :: MIT License',
-    'Operating System :: OS Independent',
-    'Programming Language :: Python',
-    'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
-    'Programming Language :: Python :: 3.7',
-    'Programming Language :: Python :: 3.8',
-    'Programming Language :: Python :: 3.9',
-    'Programming Language :: Python :: 3.10',
-    'Framework :: Django :: 3.2',
-    'Framework :: Django :: 4.0',
-]
+if not VERSION:
+    raise RuntimeError('Ensure `VERSION` is correctly set in ./pusher/version.py')
 
 setup(
-    name='django-entangled',
-    version=__version__,
-    description='Edit JSON field using Django Model Form',
-    author='Jacob Rief',
-    author_email='jacob.rief@gmail.com',
-    url='https://github.com/jrief/django-entangled',
-    packages=find_packages(),
-    install_requires=[
-        'django>=2.1',
+    name='pusher',
+    version=VERSION,
+    description='A Python library to interract with the Pusher Channels API',
+    url='https://github.com/pusher/pusher-http-python',
+    author='Pusher',
+    author_email='support@pusher.com',
+    classifiers=[
+        'License :: OSI Approved :: MIT License',
+        'Programming Language :: Python',
+        'Development Status :: 4 - Beta',
+        'Intended Audience :: Developers',
+        'Topic :: Internet :: WWW/HTTP',
+        'Programming Language :: Python :: 2',
+        'Programming Language :: Python :: 3',
     ],
+    keywords='pusher rest realtime websockets service',
     license='MIT',
-    platforms=['OS Independent'],
-    keywords=['Django Forms', 'JSON'],
-    classifiers=CLASSIFIERS,
-    long_description=long_description,
-    long_description_content_type='text/markdown',
-    include_package_data=True,
-    zip_safe=False
+
+    packages=[
+        'pusher'
+    ],
+
+    install_requires=[
+        'six',
+        'requests>=2.3.0',
+        'urllib3',
+        'pyopenssl',
+        'ndg-httpsclient',
+        'pyasn1',
+        'pynacl'
+    ],
+
+    tests_require=['nose', 'mock', 'HTTPretty'],
+
+    extras_require={
+        'aiohttp': ['aiohttp>=0.20.0'],
+        'tornado': ['tornado>=5.0.0']
+    },
+
+    package_data={
+        'pusher': ['cacert.pem']
+    },
+
+    test_suite='pusher_tests',
 )
