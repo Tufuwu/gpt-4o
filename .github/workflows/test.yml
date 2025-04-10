@@ -1,4 +1,4 @@
-name: CI
+name: Python package
 
 on:
   push:
@@ -9,37 +9,25 @@ on:
       - main
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
-
-    services:
-      docker:
-        image: docker:stable-dind
-        options: --privileged
-
+    strategy:
+      matrix:
+        python-version: ['3.8', '3.9', '3.10']
     steps:
     - uses: actions/checkout@v3
-
-    - name: Set up Python
+    - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v4
       with:
-        python-version: '3.9'
-
-    - name: Install Docker
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
       run: |
-        curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-        sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-        sudo apt-get update
-        sudo apt-get -y -o Dpkg::Options::="--force-confnew" install docker-ce
-
-    - name: Build Docker image
-      run: docker build -t draft-kings-fun .
-
-    - name: Install Flake8
-      run: docker run draft-kings-fun pip install flake8
-
-    - name: Run Flake8
-      run: docker run draft-kings-fun flake8 draftfast
-
-    - name: Run Tests
-      run: docker run draft-kings-fun nosetests --with-coverage --cover-package=.
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install codecov coverage
+    - name: Run tests
+      run: |
+        python -m coverage run -m nose --verbose --with-coverage --cover-erase --cover-package=catkin_lint test
+        python -m coverage report
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
