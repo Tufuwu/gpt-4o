@@ -1,126 +1,125 @@
-# simple-pid
+# ETIP - εxodus tracker investigation platform
 
-[![Tests](https://github.com/m-lundberg/simple-pid/actions/workflows/run-tests.yml/badge.svg)](https://github.com/m-lundberg/simple-pid/actions?query=workflow%3Atests)
-[![PyPI](https://img.shields.io/pypi/v/simple-pid.svg)](https://pypi.org/project/simple-pid/)
-[![Read the Docs](https://img.shields.io/readthedocs/simple-pid.svg)](https://simple-pid.readthedocs.io/)
-[![License](https://img.shields.io/github/license/m-lundberg/simple-pid.svg)](https://github.com/m-lundberg/simple-pid/blob/master/LICENSE.md)
-[![Downloads](https://pepy.tech/badge/simple-pid)](https://pepy.tech/project/simple-pid)
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Build Status](https://github.com/Exodus-Privacy/etip/actions/workflows/main.yml/badge.svg?branch=master)](https://github.com/Exodus-Privacy/etip/actions/workflows/main.yml) [![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/Exodus-Privacy/etip.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/Exodus-Privacy/etip/context:python)
 
-A simple and easy to use PID controller in Python. If you want a PID controller without external dependencies that just works, this is for you! The PID was designed to be robust with help from [Brett Beauregards guide](http://brettbeauregard.com/blog/2011/04/improving-the-beginners-pid-introduction/).
+ETIP is meant to ease investigations on tracker detection. For the moment, it offers few features:
 
-Usage is very simple:
+* track all modifications on trackers
+* detect rules collisions for both network and code signature
 
-```python
-from simple_pid import PID
-pid = PID(1, 0.1, 0.05, setpoint=1)
+## Contribute to the identification of trackers
 
-# Assume we have a system we want to control in controlled_system
-v = controlled_system.update(0)
+If you wish to help us identify new trackers, you can **request an ETIP account** by sending a username and an email address to etip@exodus-privacy.eu.org
 
-while True:
-    # Compute new output from the PID according to the systems current value
-    control = pid(v)
-    
-    # Feed the PID output to the system and get its current value
-    v = controlled_system.update(control)
+You can also take a look at to the following repositories:
+
+* <https://github.com/YalePrivacyLab/tracker-profiles>
+* <https://github.com/jawz101/potentialTrackers>
+
+## Contributing to ETIP development
+
+If you want to contribute to this project, you can refer to [this documentation](CONTRIBUTING.md).
+
+## API
+
+An API is available to help administrate the ETIP database.
+
+### Authenticate
+
+```sh
+POST /api/get-auth-token/
 ```
 
-Complete API documentation can be found [here](https://simple-pid.readthedocs.io/en/latest/simple_pid.html#module-simple_pid.PID).
+Example:
 
-## Installation
-To install, run:
-```
-pip install simple-pid
+```sh
+curl -X POST http://localhost:8000/api/get-auth-token/ --data "username=admin&password=testtest"
 ```
 
-## Usage
-The `PID` class implements `__call__()`, which means that to compute a new output value, you simply call the object like this:
-```python
-output = pid(current_value)
+You need to include your token as an `Authorization` header in all subsequent requests.
+
+### Get trackers
+
+```sh
+GET /api/trackers/
 ```
 
-### The basics
-The PID works best when it is updated at regular intervals. To achieve this, set `sample_time` to the amount of time there should be between each update and then call the PID every time in the program loop. A new output will only be calculated when `sample_time` seconds has passed:
-```python
-pid.sample_time = 0.01  # Update every 0.01 seconds
+Example:
 
-while True:
-    output = pid(current_value)
+```sh
+curl -X GET http://localhost:8000/api/trackers/ -H 'Authorization: Token <your-token>'
 ```
 
-To set the setpoint, ie. the value that the PID is trying to achieve, simply set it like this:
-```python
-pid.setpoint = 10
+## Development environment
+
+### Installation
+
+Clone the project
+
+```sh
+git clone https://github.com/Exodus-Privacy/etip.git
 ```
 
-The tunings can be changed any time when the PID is running. They can either be set individually or all at once:
-```python
-pid.Ki = 1.0
-pid.tunings = (1.0, 0.2, 0.4)
+Create the Python virtual env
+
+```sh
+cd etip
+virtualenv venv -p python3
+source venv/bin/activate
 ```
 
-To use the PID in [reverse mode](http://brettbeauregard.com/blog/2011/04/improving-the-beginners-pid-direction/), meaning that an increase in the input leads to a decrease in the output (like when cooling for example), you can set the tunings to negative values:
+Install dependencies
 
-```python
-pid.tunings = (-1.0, -0.1, 0)
+```sh
+pip install -r requirements.txt
 ```
 
-Note that all the tunings should have the same sign.
+Create the database
 
-In order to get output values in a certain range, and also to avoid [integral windup](https://en.wikipedia.org/wiki/Integral_windup) (since the integral term will never be allowed to grow outside of these limits), the output can be limited to a range:
-```python
-pid.output_limits = (0, 10)    # Output value will be between 0 and 10
-pid.output_limits = (0, None)  # Output will always be above 0, but with no upper bound
+```sh
+export DJANGO_SETTINGS_MODULE=etip.settings.dev
+cd etip/
+python manage.py migrate
+
+# Import tracker definitions from the official instance of εxodus
+python manage.py import_trackers
+
+# Import predefined tracker categories
+python manage.py import_categories
 ```
 
-### Other features
-#### Auto mode
-To disable the PID so that no new values are computed, set auto mode to False:
-```python
-pid.auto_mode = False  # No new values will be computed when pid is called
-pid.auto_mode = True   # pid is enabled again
-```
-When disabling the PID and controlling a system manually, it might be useful to tell the PID controller where to start from when giving back control to it. This can be done by enabling auto mode like this:
-```python
-pid.set_auto_mode(True, last_output=8.0)
-```
-This will set the I-term to the value given to `last_output`, meaning that if the system that is being controlled was stable at that output value the PID will keep the system stable if started from that point, without any big bumps in the output when turning the PID back on.
+Create admin user
 
-#### Observing separate components
-When tuning the PID, it can be useful to see how each of the components contribute to the output. They can be seen like this:
-```python
-p, i, d = pid.components  # The separate terms are now in p, i, d
+```sh
+python manage.py createsuperuser
 ```
 
-#### Proportional on measurement
-To eliminate overshoot in certain types of systems, you can calculate the [proportional term directly on the measurement](http://brettbeauregard.com/blog/2017/06/introducing-proportional-on-measurement/) instead of the error. This can be enabled like this:
-```python
-pid.proportional_on_measurement = True
+### Run the tests
+
+```sh
+export DJANGO_SETTINGS_MODULE=etip.settings.dev
+python manage.py test
 ```
 
-#### Error mapping
-To transform the error value to another domain before doing any computations on it, you can supply an `error_map` callback function to the PID. The callback function should take one argument which is the error from the setpoint. This can be used e.g. to get a degree value error in a yaw angle control with values between [-pi, pi):
-```python
-import math
+### Start the server
 
-def pi_clip(angle):
-    if angle > 0:
-        if angle > math.pi:
-            return angle - 2*math.pi
-    else:
-        if angle < -math.pi:
-            return angle + 2*math.pi
-    return angle
-
-pid.error_map = pi_clip
+```sh
+export DJANGO_SETTINGS_MODULE=etip.settings.dev
+python manage.py runserver
 ```
 
-## Tests
-Use the following to run tests:
-```
-tox
+### Useful commands
+
+Some admin commands are available to help administrate the ETIP database.
+
+#### Compare with Exodus
+
+This command retrieves trackers data from an εxodus instance and looks for differences with trackers in the local database.
+
+```sh
+python manage.py compare_with_exodus
 ```
 
-## License
-Licensed under the [MIT License](https://github.com/m-lundberg/simple-pid/blob/master/LICENSE.md).
+Note: for now, it only compares with local trackers having the flag `is_in_exodus`.
+
+The default εxodus instance queried is the public one available at <https://reports.exodus-privacy.eu.org> (see `--exodus-hostname` parameter).
