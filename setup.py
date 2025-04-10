@@ -1,27 +1,47 @@
-from setuptools import setup
+#!/usr/bin/env python
+import os, sys
+from setuptools import setup, find_packages
 
-with open("README.md", "r") as fh:
-    long_description = fh.read()
+if sys.argv[-1] == 'publish':
+    os.system('python setup.py sdist upload')
+    sys.exit(0)
 
-requires = []
-with open('requirements.txt') as f:
-    for line in f.readlines():
-        line = line.strip()  # Remove spaces
-        line = line.split('#')[0]  # Remove comments
-        if line:  # Remove empty lines
-            requires.append(line)
+with open('README.rst', 'r') as f:
+    long_description = f.read()
+
+# Dynamically calculate the version based on swingtime.VERSION.
+version=__import__('swingtime').get_version()
 
 setup(
-    name='django-clickhouse',
-    version='1.0.3',
-    packages=['django_clickhouse'],
-    package_dir={'': 'src'},
-    url='https://github.com/carrotquest/django-clickhouse',
-    license='BSD 3-clause "New" or "Revised" License',
-    author='Carrot quest',
-    author_email='m1ha@carrotquest.io',
-    description='Django extension to integrate with ClickHouse database',
+    name='django-swingtime',
+    url='https://github.com/dakrauth/django-swingtime',
+    author='David A Krauth',
+    author_email='dakrauth@gmail.com',
+    description='A Django calendaring application.',
+    version=version,
     long_description=long_description,
-    long_description_content_type="text/markdown",
-    install_requires=requires
+    long_description_content_type='text/x-rst',
+    platforms=['any'],
+    license='MIT License',
+    python_requires='>=3.6, <4',
+    install_requires=['Django>=2.2,<4.0', 'python-dateutil==2.8.0'],
+    classifiers=[
+        'Development Status :: 5 - Production/Stable',
+        'Environment :: Web Environment',
+        'Framework :: Django',
+        'Framework :: Django :: 2.2',
+        'Framework :: Django :: 3.0',
+        'Framework :: Django :: 3.1',
+        'Framework :: Django :: 3.2',
+        'License :: OSI Approved :: MIT License',
+        'Programming Language :: Python',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
+        'Topic :: Office/Business :: Scheduling',
+    ],
+    packages=find_packages(),
+    package_data={'swingtime': ['locale/*/*/*.*',]},
+    zip_safe=False,
 )

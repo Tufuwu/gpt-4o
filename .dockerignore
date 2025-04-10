@@ -1,15 +1,11 @@
-# Docs
-docs/
-
-# Python cache files
-**/__pycache__/
-
-# Private and public keys
-*.key
-*.ppk
-*.pub
-
-# Hidden apps directories
-.github/
-.idea/
+.DS_Store
+.git
+.coverage
+.dockerignore
 .gitignore
+dist
+build
+docs
+venv
+.tox
+.pytest_cache
