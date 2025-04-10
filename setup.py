@@ -1,57 +1,63 @@
-from setuptools import setup, find_packages
-import os
+"""
+Installation setup for mtgjson5
+"""
+import configparser
+import pathlib
 
-with open('tenable/version.py', 'r') as vfile:
-    exec(vfile.read())
+import setuptools
 
-try:
-    long_description = open(
-        os.path.join(
-            os.path.abspath(os.path.dirname(__file__)),
-            'README.rst')).read()
-except:
-    long_description = 'Please refer to https://pytenable.readthedocs.io'
-    print('! could not read README.rst file.')
+# Establish project directory
+project_root: pathlib.Path = pathlib.Path(__file__).resolve().parent
 
-setup(
-    name='pyTenable',
-    version=version,
-    description='Python library to interface into Tenable\'s products and applications',
-    author='Tenable, Inc.',
-    long_description=long_description,
-    author_email='smcgrath@tenable.com',
-    url='https://github.com/tenable/pytenable',
-    license='MIT',
+# Read config details to determine version-ing
+config_file = project_root.joinpath("mtgjson5/resources/mtgjson.properties")
+config = configparser.ConfigParser()
+if config_file.is_file():
+    config.read(str(config_file))
+
+setuptools.setup(
+    name="mtgjson5",
+    version=config.get("MTGJSON", "version", fallback="5.0.0+fallback"),
+    author="Zach Halpern",
+    author_email="zach@mtgjson.com",
+    url="https://mtgjson.com/",
+    description="Magic: the Gathering compiled database generator",
+    long_description=project_root.joinpath("README.md").open(encoding="utf-8").read(),
+    long_description_content_type="text/markdown",
+    license="MIT",
     classifiers=[
-        'Development Status :: 5 - Production/Stable',
-        'Intended Audience :: Developers',
-        'Topic :: Software Development',
-        'Topic :: Software Development :: Libraries',
-        'Topic :: Software Development :: Libraries :: Application Frameworks',
-        'License :: OSI Approved :: MIT License',
-        'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7',
-        'Programming Language :: Python :: 3.8',
+        "Intended Audience :: Developers",
+        "Intended Audience :: Education",
+        "Intended Audience :: Science/Research",
+        "License :: OSI Approved :: MIT License",
+        "Natural Language :: English",
+        "Operating System :: MacOS :: MacOS X",
+        "Operating System :: Microsoft :: Windows :: Windows 10",
+        "Operating System :: Unix",
+        "Programming Language :: Python :: 3 :: Only",
+        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python",
+        "Topic :: Database",
+        "Topic :: Software Development :: Version Control :: Git",
     ],
-    keywords='tenable tenable_io securitycenter containersecurity',
-    packages=find_packages(exclude=['docs', 'tests']),
-    install_requires=[
-        'requests>=2.19',
-        'python-dateutil>=2.6',
-        'semver>=2.8.1',
-        'ipaddress>=1.0.22',
-        'restfly>=1.3.5',
-        'marshmallow>=3.6',
-        'python-box>=4.0',
+    keywords=[
+        "Big Data",
+        "Card Games",
+        "Collectible",
+        "Database",
+        "JSON",
+        "MTG",
+        "MTGJSON",
+        "Trading Cards",
+        "Magic: The Gathering",
     ],
-    extras_require={
-        'NessusReportv2': ['defusedxml>=0.5.0'],
-        'PWCertAuth': ['requests-pkcs12>=1.3'],
-        'docker': ['docker>=3.7.2'],
-        'complete': [
-            'defusedxml>=0.5.0',
-            'requests-pkcs12>=1.3',
-            'docker>=3.7.2',
-        ]
-    }
+    include_package_data=True,
+    packages=setuptools.find_packages(),
+    install_requires=project_root.joinpath("requirements.txt")
+    .open(encoding="utf-8")
+    .readlines()
+    if project_root.joinpath("requirements.txt").is_file()
+    else [],  # Use the requirements file, if able
 )

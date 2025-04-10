@@ -1,30 +1,18 @@
 ---
-name: Bug report
-about: Create a report to help us improve
+name: Bug Report
+about: File a bug report to help improve MTGJSON
+title: ''
+labels: ''
+assignees: ''
 
 ---
 
-**Describe the bug**
-A clear and concise description of what the bug is.
+#### Version(s) affected
+- [ ] MTGJSON 4
+- [ ] MTGJSON 5
 
-**To Reproduce**
-Steps to reproduce the behavior:
-1. Go to '...'
-2. Call  '....'
-3. Do '....'
-4. See error
+#### Version(s) tested against
+<!-- Write in what version of MTGJSON you are working with -->
+<!-- Example: "MTGJSON 5.0.0+20200703" -->
 
-**Expected behavior**
-A clear and concise description of what you expected to happen.
-
-**Screenshots**
-If applicable, add screenshots to help explain your problem.
-
-**System Information (please complete the following information):**
- - OS: [e.g. MacOS]
- - Architecture [e.g. 64bit, 32bit]
- - Version [e.g. 2.7.9]
- - Memory [e.g. 4G]
-
-**Additional context**
-Add any other context about the problem here.
+#### Description of Bug

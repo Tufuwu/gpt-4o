@@ -1,1 +1,1 @@
-recursive-exclude tests *
+include mtgjson5/resources/*
