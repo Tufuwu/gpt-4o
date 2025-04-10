@@ -1,26 +1,19 @@
-# The gpodder.net Client Library
+radare2-r2papi
+==============
 
-This library provides an easy and structured way to access the
-gpodder.net web services. In addition to subscription list
-synchronization and storage, the advanced API support allows
-to upload and download episode status changes.
+Formerly known as r2pipe-api, but `papi` sounds better.
 
-The source of this library is managed in a Git repository at
+[![Rust](https://github.com/radareorg/radare2-r2papi/actions/workflows/rust.yml/badge.svg?branch=master)](https://github.com/radareorg/radare2-r2papi/actions/workflows/rust.yml)
+[![Python](https://github.com/radareorg/radare2-r2papi/actions/workflows/python.yml/badge.svg?branch=master)](https://github.com/radareorg/radare2-r2papi/actions/workflows/python.yml)
+[![Typescript](https://github.com/radareorg/radare2-r2papi/actions/workflows/typescript.yml/badge.svg?branch=master)](https://github.com/radareorg/radare2-r2papi/actions/workflows/typescript.yml)
 
- - https://github.com/gpodder/mygpoclient
+This repository contains a high-level API on top of r2pipe, abstracting
+the r2 commands with a human-friendly taste.
 
-Documentation can be read online at
+As long as this API will require some discussion because it will serve
+as a way to redesign the R2 C Apis at some point, we must focus on
+practical use cases, flexibility, ortogonality and other ities.
 
-    http://mygpoclient.readthedocs.io/
+Feel free to open issues, send PRs with proposals.
 
-If you have any questions, please don't hesitate to contact
-the gPodder developers mailing list at
-
- - gpodder@freelists.org
-
-You can report bugs and problems that you find on GitHub at
-
- - https://github.com/gpodder/gpodder/issues
-
-Thank you for your interest in the mygpoclient library!
-
+--pancake
