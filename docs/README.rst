@@ -1,13 +1,7 @@
-Suds Documentation
-==================
+Contributing to the documentation
+=================================
 
-In order to generate the ``suds`` html documentation you need Sphinx v1.8.5
+We welcome contributions to the documentation!
 
-This folder must be in the root of the repository. At this very same level do:
-
-       $ make html
-
-The documentation will be stored in the 'build' folder.      
-
-
-Licensed under LGPL (see the ``LICENSE.txt`` file included in the distribution)
+Please see the docs for more details on how:
+http://tableone.readthedocs.io/en/latest/contributing.html
