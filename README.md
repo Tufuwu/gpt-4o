@@ -1,257 +1,148 @@
-[![Build Status](https://www.travis-ci.com/pydot/pydot.svg?branch=master)](https://www.travis-ci.com/pydot/pydot)
-[![PyPI](https://img.shields.io/pypi/v/pydot.svg)](https://pypi.org/project/pydot/)
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+# Fierce
 
+[![CI](https://github.com/mschwager/fierce/actions/workflows/ci.yml/badge.svg)](https://github.com/mschwager/fierce/actions/workflows/ci.yml)
+[![Coverage Status](https://coveralls.io/repos/github/mschwager/fierce/badge.svg?branch=master)](https://coveralls.io/github/mschwager/fierce?branch=master)
+[![Dlint](https://github.com/mschwager/fierce/actions/workflows/dlint.yml/badge.svg)](https://github.com/mschwager/fierce/actions/workflows/dlint.yml)
+[![Python Versions](https://img.shields.io/pypi/pyversions/fierce.svg)](https://img.shields.io/pypi/pyversions/fierce.svg)
+[![PyPI Version](https://img.shields.io/pypi/v/fierce.svg)](https://img.shields.io/pypi/v/fierce.svg)
 
-About
-=====
+Fierce is a `DNS` reconnaissance tool for locating non-contiguous IP space.
 
-`pydot`:
+Useful links:
 
-  - is an interface to [Graphviz][1]
-  - can parse and dump into the [DOT language][2] used by GraphViz,
-  - is written in pure Python,
+* [Domain Name System (DNS)](https://en.wikipedia.org/wiki/Domain_Name_System)
+  * [Domain Names - Concepts and Facilities](https://tools.ietf.org/html/rfc1034)
+  * [Domain Names - Implementation and Specification](https://tools.ietf.org/html/rfc1035)
+  * [Threat Analysis of the Domain Name System (DNS)](https://tools.ietf.org/html/rfc3833)
+* [Name Servers (NS)](https://en.wikipedia.org/wiki/Domain_Name_System#Name_servers)
+* [State of Authority Record (SOA)](https://en.wikipedia.org/wiki/List_of_DNS_record_types#SOA)
+* [Zone Transfer](https://en.wikipedia.org/wiki/DNS_zone_transfer)
+  * [DNS Zone Transfer Protocol (AXFR)](https://tools.ietf.org/html/rfc5936)
+  * [Incremental Zone Transfer in DNS (IXFR)](https://tools.ietf.org/html/rfc1995)
+* [Wildcard DNS Record](https://en.wikipedia.org/wiki/Wildcard_DNS_record)
 
-and [`networkx`][3] can convert its graphs to `pydot`.
+# Overview
 
-Development occurs at [GitHub][11], where you can report issues and
-contribute code.
+First, credit where credit is due, `fierce` was originally written by RSnake
+along with others at http://ha.ckers.org/. This is simply a conversion to
+Python 3 to simplify and modernize the codebase.
 
+The original description was very apt, so I'll include it here:
 
-Examples
-========
+> Fierce is a semi-lightweight scanner that helps locate non-contiguous
+> IP space and hostnames against specified domains. It's really meant
+> as a pre-cursor to nmap, unicornscan, nessus, nikto, etc, since all 
+> of those require that you already know what IP space you are looking 
+> for. This does not perform exploitation and does not scan the whole 
+> internet indiscriminately. It is meant specifically to locate likely 
+> targets both inside and outside a corporate network. Because it uses 
+> DNS primarily you will often find mis-configured networks that leak 
+> internal address space. That's especially useful in targeted malware.
 
-The examples here will show you the most common input, editing and
-output methods.
+# Installing
 
-Input
------
+```
+$ python -m pip install fierce
+$ fierce -h
+```
 
-No matter what you want to do with `pydot`, it will need some input to
-start with. Here are 3 common options:
+OR
 
-1. Import a graph from an existing DOT-file.
+```
+$ git clone https://github.com/mschwager/fierce.git
+$ cd fierce
+$ python -m pip install -r requirements.txt
+$ python fierce/fierce.py -h
+```
 
-    Use this method if you already have a DOT-file describing a graph,
-    for example as output of another program. Let's say you already
-    have this `example.dot` (based on an [example from Wikipedia][12]):
+*Requires Python 3.*
 
-    ```dot
-    graph my_graph {
-       bgcolor="yellow";
-       a [label="Foo"];
-       b [shape=circle];
-       a -- b -- c [color=blue];
-    }
-    ```
+# Using
 
-    Just read the graph from the DOT-file:
+Let's start with something basic:
 
-    ```python
-    import pydot
+```
+$ fierce --domain google.com --subdomains accounts admin ads
+```
 
-    graphs = pydot.graph_from_dot_file("example.dot")
-    graph = graphs[0]
-    ```
+Traverse IPs near discovered domains to search for contiguous blocks with the
+`--traverse` flag:
 
-2. or: Parse a graph from an existing DOT-string.
+```
+$ fierce --domain facebook.com --subdomains admin --traverse 10
+```
 
-    Use this method if you already have a DOT-string describing a
-    graph in a Python variable:
+Limit nearby IP traversal to certain domains with the `--search` flag:
 
-    ```python
-    import pydot
+```
+$ fierce --domain facebook.com --subdomains admin --search fb.com fb.net
+```
 
-    dot_string = """graph my_graph {
-        bgcolor="yellow";
-        a [label="Foo"];
-        b [shape=circle];
-        a -- b -- c [color=blue];
-    }"""
+Attempt an `HTTP` connection on domains discovered with the `--connect` flag:
 
-    graphs = pydot.graph_from_dot_data(dot_string)
-    graph = graphs[0]
-    ```
+```
+$ fierce --domain stackoverflow.com --subdomains mail --connect
+```
 
-3. or: Create a graph from scratch using pydot objects.
+Exchange speed for breadth with the `--wide` flag, which looks for nearby
+domains on all IPs of the [/24](https://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing#IPv4_CIDR_blocks)
+of a discovered domain:
 
-    Now this is where the cool stuff starts. Use this method if you
-    want to build new graphs from Python.
+```
+$ fierce --domain facebook.com --wide
+```
 
-    ```python
-    import pydot
+Zone transfers are rare these days, but they give us the keys to the DNS castle.
+[zonetransfer.me](https://digi.ninja/projects/zonetransferme.php) is a very
+useful service for testing for and learning about zone transfers:
 
-    graph = pydot.Dot("my_graph", graph_type="graph", bgcolor="yellow")
+```
+$ fierce --domain zonetransfer.me
+```
 
-    # Add nodes
-    my_node = pydot.Node("a", label="Foo")
-    graph.add_node(my_node)
-    # Or, without using an intermediate variable:
-    graph.add_node(pydot.Node("b", shape="circle"))
+To save the results to a file for later use we can simply redirect output:
 
-    # Add edges
-    my_edge = pydot.Edge("a", "b", color="blue")
-    graph.add_edge(my_edge)
-    # Or, without using an intermediate variable:
-    graph.add_edge(pydot.Edge("b", "c", color="blue"))
-    ```
+```
+$ fierce --domain zonetransfer.me > output.txt
+```
 
-    Imagine using these basic building blocks from your Python program
-    to dynamically generate a graph. For example, start out with a
-    basic `pydot.Dot` graph object, then loop through your data while
-    adding nodes and edges. Use values from your data as labels, to
-    determine shapes, edges and so forth. This way, you can easily
-    build visualizations of thousands of interconnected items.
+Internal networks will often have large blocks of contiguous IP space assigned.
+We can scan those as well:
 
-4. or: Convert a NetworkX graph to a pydot graph.
+```
+$ fierce --dns-servers 10.0.0.1 --range 10.0.0.0/24
+```
 
-    NetworkX has conversion methods for pydot graphs:
+Check out `--help` for further information:
 
-    ```python
-    import networkx
-    import pydot
+```
+$ fierce --help
+```
 
-    # See NetworkX documentation on how to build a NetworkX graph.
+# Developing
 
-    graph = networkx.drawing.nx_pydot.to_pydot(my_networkx_graph)
-    ```
+First, install development packages:
 
-Edit
-----
+```
+$ python -m pip install -r requirements.txt
+$ python -m pip install -r requirements-dev.txt
+$ python -m pip install -e .
+```
 
-You can now further manipulate your graph using pydot methods:
+## Testing
 
-- Add further nodes and edges:
+```
+$ pytest
+```
 
-  ```python
-  graph.add_edge(pydot.Edge("b", "d", style="dotted"))
-  ```
+## Linting
 
-- Edit attributes of graph, nodes and edges:
+```
+$ flake8
+```
 
-  ```python
-  graph.set_bgcolor("lightyellow")
-  graph.get_node("b")[0].set_shape("box")
-  ```
+## Coverage
 
-Output
-------
-
-Here are 3 different output options:
-
-1. Generate an image.
-
-    To generate an image of the graph, use one of the `create_*()` or
-    `write_*()` methods.
-
-    - If you need to further process the output in Python, the
-      `create_*` methods will get you a Python bytes object:
-
-      ```python
-      output_graphviz_svg = graph.create_svg()
-      ```
-
-    - If instead you just want to save the image to a file, use one of
-      the `write_*` methods:
-
-      ```python
-      graph.write_png("output.png")
-      ```
-
-2. Retrieve the DOT string.
-
-    There are two different DOT strings you can retrieve:
-
-    - The "raw" pydot DOT: This is generated the fastest and will
-      usually still look quite similar to the DOT you put in. It is
-      generated by pydot itself, without calling Graphviz.
-
-      ```python
-      # As a string:
-      output_raw_dot = graph.to_string()
-      # Or, save it as a DOT-file:
-      graph.write_raw("output_raw.dot")
-      ```
-
-    - The Graphviz DOT: You can use it to check how Graphviz lays out
-      the graph before it produces an image. It is generated by
-      Graphviz.
-
-      ```python
-      # As a bytes literal:
-      output_graphviz_dot = graph.create_dot()
-      # Or, save it as a DOT-file:
-      graph.write_dot("output_graphviz.dot")
-      ```
-
-3. Convert to a NetworkX graph.
-
-    Here as well, NetworkX has a conversion method for pydot graphs:
-
-    ```python
-    my_networkx_graph = networkx.drawing.nx_pydot.from_pydot(graph)
-    ```
-
-More help
----------
-
-For more help, see the docstrings of the various pydot objects and
-methods. For example, `help(pydot)`, `help(pydot.Graph)` and
-`help(pydot.Dot.write)`.
-
-More [documentation contributions welcome][13].
-
-
-Installation
-============
-
-From [PyPI][4] using [`pip`][5]:
-
-`pip install pydot`
-
-From source:
-
-`python setup.py install`
-
-
-Dependencies
-============
-
-- [`pyparsing`][6]: used only for *loading* DOT files,
-  installed automatically during `pydot` installation.
-
-- GraphViz: used to render graphs as PDF, PNG, SVG, etc.
-  Should be installed separately, using your system's
-  [package manager][7], something similar (e.g., [MacPorts][8]),
-  or from [its source][9].
-
-
-License
-=======
-
-Distributed under an [MIT license][10].
-
-
-Contacts
-========
-
-Maintainers:
-- Sebastian Kalinowski <sebastian@kalinowski.eu> (GitHub: @prmtl)
-- Peter Nowee <peter@peternowee.com> (GitHub: @peternowee)
-
-Original author: Ero Carrera <ero.carrera@gmail.com>
-
-
-[1]: https://www.graphviz.org
-[2]: https://en.wikipedia.org/wiki/DOT_%28graph_description_language%29
-[3]: https://github.com/networkx/networkx
-[4]: https://pypi.python.org/pypi
-[5]: https://github.com/pypa/pip
-[6]: https://github.com/pyparsing/pyparsing
-[7]: https://en.wikipedia.org/wiki/Package_manager
-[8]: https://www.macports.org
-[9]: https://gitlab.com/graphviz/graphviz
-[10]: https://github.com/pydot/pydot/blob/master/LICENSE
-[11]: https://github.com/pydot/pydot
-[12]: https://en.wikipedia.org/w/index.php?title=DOT_(graph_description_language)&oldid=1003001464#Attributes
-[13]: https://github.com/pydot/pydot/issues/130
+```
+$ pytest --cov
+```
