@@ -1,12 +1,17 @@
-.DS_Store
+.idea/
+venv
 *.pyc
-.cache/
-temp_files/
-.vscode/
-test.zip
-tests/data/test_download.jpg
-.coverage
-.idea
-.venv
+*.pyo
+*.swp
 
-docs/build/*
+feedgen/tests/tmp_Atomfeed.xml
+
+feedgen/tests/tmp_Rssfeed.xml
+
+tmp_Atomfeed.xml
+
+tmp_Rssfeed.xml
+
+# testing artifacts
+.coverage
+*.egg-info/
