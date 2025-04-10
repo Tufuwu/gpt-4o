@@ -1,38 +1,60 @@
-import os
-from setuptools import setup
+from os import path
+from setuptools import setup, find_packages
 
-with open(os.path.join(os.path.dirname(__file__), 'README.rst')) as readme:
-    README = readme.read()
+this_directory = path.abspath(path.dirname(__file__))
 
-# allow setup.py to be run from any path
-os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
+with open(path.join(this_directory, 'README.md')) as f:
+    long_description = f.read()
+
+
+DISTNAME = 'lexpy'
+
+AUTHOR = 'Abhishek Singh'
+MAINTAINER = 'Abhishek Singh'
+MAINTAINER_EMAIL = 'abhishek.singh20141@gmail.com'
+DESCRIPTION = 'Python package for lexicon.'
+LICENSE = 'GNU GPLv3'
+URL = 'https://github.com/aosingh/lexpy'
+VERSION = '1.0.0'
+
+PACKAGES = ['lexpy']
+
+
+classifiers = [
+    'Development Status :: 5 - Production/Stable',
+    'Intended Audience :: Education',
+    'Intended Audience :: Developers',
+    'Intended Audience :: Science/Research',
+    'Topic :: Text Processing :: Linguistic',
+    'Topic :: Text Processing :: Indexing',
+    'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
+    'Programming Language :: Python :: 3.7',
+    'Programming Language :: Python :: 3.8',
+    'Programming Language :: Python :: 3.9',
+    'Programming Language :: Python :: 3.10',
+    'Operating System :: POSIX :: Linux',
+    'Operating System :: Unix',
+    'Operating System :: Microsoft :: Windows',
+    'Operating System :: MacOS'
+]
+keywords = 'trie suffix-trees lexicon directed-acyclic-word-graph dawg'
+
 
 setup(
-    name='django-db-logger',
-    version='0.1.11',
-    packages=['django_db_logger', 'django_db_logger.migrations'],
+    name=DISTNAME,
+    long_description=long_description,
+    long_description_content_type='text/markdown',
+    author=AUTHOR,
+    author_email=MAINTAINER_EMAIL,
+    maintainer=MAINTAINER,
+    maintainer_email=MAINTAINER_EMAIL,
+    description=DESCRIPTION,
+    license=LICENSE,
+    url=URL,
+    version=VERSION,
+    packages=find_packages(exclude=("tests",)),
+    package_dir={'lexpy': 'lexpy'},
     include_package_data=True,
-    license='MIT License',
-    description='Django logging in database',
-    long_description=README,
-    url='https://github.com/CiCiUi/django-db-logger',
-    author='zhangshine',
-    author_email='zhangshine0125@gmail.com',
-    install_requires=['django>=1.9', 'six'],
-    classifiers=[
-        'Environment :: Web Environment',
-        'Framework :: Django',
-        'Intended Audience :: Developers',
-        'License :: OSI Approved :: MIT License',
-        'Operating System :: OS Independent',
-        'Programming Language :: Python',
-        'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7',
-        'Programming Language :: Python :: 3.8',
-        'Programming Language :: Python :: 3.9',
-        'Topic :: Internet :: WWW/HTTP',
-        'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
-    ],
+    classifiers=classifiers,
+    keywords=keywords.split(),
 )
