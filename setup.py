@@ -1,39 +1,51 @@
-import os
-import re
-from setuptools import setup, find_packages
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
+from setuptools import setup
 
-def read(filename):
-    return open(os.path.join(os.path.dirname(__file__), filename)).read()
+import feedgen.version
 
+packages = ['feedgen', 'feedgen/ext']
 
-def read_version():
-    with open('filestack/__init__.py') as f:
-        return re.search(r'__version__ = \'(.+)\'$', f.readline()).group(1)
-
-
-setup(
-    name='filestack-python',
-    version=read_version(),
-    license='Apache 2.0',
-    description='Filestack Python SDK',
-    long_description='Visit: https://github.com/filestack/filestack-python',
-    url='https://github.com/filestack/filestack-python',
-    author='filestack.com',
-    author_email='support@filestack.com',
-    packages=find_packages(),
-    install_requires=[
-        'requests==2.24.0',
-        'trafaret==2.0.2'
-    ],
-    classifiers=[
-        'Development Status :: 4 - Beta',
+setup(name='feedgen',
+      packages=packages,
+      version=feedgen.version.version_full_str,
+      description='Feed Generator (ATOM, RSS, Podcasts)',
+      author='Lars Kiesow',
+      author_email='lkiesow@uos.de',
+      url='https://lkiesow.github.io/python-feedgen',
+      keywords=['feed', 'ATOM', 'RSS', 'podcast'],
+      license='FreeBSD and LGPLv3+',
+      install_requires=['lxml', 'python-dateutil'],
+      classifiers=[
+        'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
-        'License :: OSI Approved :: Apache Software License',
+        'Intended Audience :: Information Technology',
+        'Intended Audience :: Science/Research',
+        'License :: OSI Approved :: BSD License',
+        'License :: OSI Approved :: GNU Lesser General Public License v3 ' +
+        'or later (LGPLv3+)',
+        'Natural Language :: English',
+        'Operating System :: OS Independent',
         'Programming Language :: Python',
-        'Programming Language :: Python :: 3.5',
-        'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7',
-        'Topic :: Internet :: WWW/HTTP',
-    ],
-)
+        'Programming Language :: Python :: 2',
+        'Programming Language :: Python :: 3',
+        'Topic :: Communications',
+        'Topic :: Internet',
+        'Topic :: Text Processing',
+        'Topic :: Text Processing :: Markup',
+        'Topic :: Text Processing :: Markup :: XML'
+        ],
+      test_suite="tests",
+      long_description='''\
+Feedgenerator
+=============
+
+This module can be used to generate web feeds in both ATOM and RSS format. It
+has support for extensions. Included is for example an extension to produce
+Podcasts.
+
+It is licensed under the terms of both, the FreeBSD license and the LGPLv3+.
+Choose the one which is more convenient for you. For more details have a look
+at license.bsd and license.lgpl.
+''')
