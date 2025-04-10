@@ -1,52 +1,30 @@
-#!/usr/bin/env python
-# coding=utf-8
-
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+import os.path
 from setuptools import setup
-import sys
-import os
 
-
-def catkin_lint_version():
-    from catkin_lint import __version__
-    return __version__
-
-
-def read(fname):
-    return open(os.path.join(os.path.dirname(__file__), fname)).read()
-
-
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "src"))
+with open(os.path.join(os.path.dirname(__file__), "README.md")) as f:
+    readme = f.read()
 
 setup(
-    name="catkin_lint",
-    description="Check catkin packages for common errors",
-    long_description=read("README.rst"),
-    author="Timo Röhling",
-    author_email="timo.roehling@fkie.fraunhofer.de",
-    license="BSD",
-    url="https://github.com/fkie/catkin_lint",
-    download_url="https://github.com/fkie/catkin_lint/tarball/%s" % catkin_lint_version(),
-    keywords=["catkin", "ROS"],
-    packages=["catkin_lint", "catkin_lint.checks"],
-    package_dir={"": "src"},
-    data_files=[("share/bash-completion/completions", ["bash/catkin_lint"])],
-    scripts=["bin/catkin_lint"],
-    version=catkin_lint_version(),
-    install_requires=["catkin_pkg", "lxml"],
-    test_suite="nose.collector",
+    name="sphinx-multiversion",
+    description="Add support for multiple versions to sphinx",
+    long_description=readme,
+    long_description_content_type="text/markdown",
     classifiers=[
-        "Development Status :: 5 - Production/Stable",
-        "Intended Audience :: Developers",
         "License :: OSI Approved :: BSD License",
-        "Topic :: Software Development :: Quality Assurance",
-        "Environment :: Console",
-        "Operating System :: OS Independent",
-        "Programming Language :: Python",
-        "Programming Language :: Python :: 3"
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
     ],
+    author="Jan Holthuis",
+    author_email="holthuis.jan@googlemail.com",
+    url="https://holzhaus.github.io/sphinx-multiversion/",
+    version="0.2.4",
+    install_requires=["sphinx >= 2.1"],
+    license="BSD",
+    packages=["sphinx_multiversion"],
     entry_points={
-        "catkin_tools.commands.catkin.verbs": [
-            "lint = catkin_lint.main:description",
-        ],
+        "console_scripts": ["sphinx-multiversion=sphinx_multiversion:main",],
     },
 )

@@ -1,12 +1,4 @@
-/.project
-/.pydevproject
-/.settings
-/.coverage
-/.vscode
-/build
-/coverage.xml
-/dist
-/MANIFEST
-*.pyc
-__pycache__/
-*.egg-info/
+build/
+_build/
+.idea/
+.vscode/

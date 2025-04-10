@@ -1,5 +1,3 @@
-catkin_pkg
-lxml
-rosdep
-rosdistro
-
+pip
+Sphinx
+sphinx-tabs
