@@ -1,104 +1,297 @@
-rospy_message_converter
-=======================
+# Panoptes CLI
 
-Rospy_message_converter is a lightweight ROS package and Python library to
-convert from Python dictionaries and JSON messages to rospy messages, and vice
-versa.
+A command-line interface for [Panoptes](https://github.com/zooniverse/Panoptes),
+the API behind [the Zooniverse](https://www.zooniverse.org/).
 
-ROS 1 and ROS 2 branches
-------------------------
+## Installation
 
-ROS 1 users should use the `master` branch. ROS 2 users should use the appropriate
-branch for their distro (`foxy`/`galactic`/`humble`/`rolling`/...).
+The Panoptes CLI is written in Python, so in order to install it you will need
+to install either Python 2 or Python 3, along with `pip`. macOS and Linux
+already come with Python installed, so run this to see if you already have
+everything you need:
 
-Usage
------
-
-Convert a dictionary to a ROS message
-
-```python
-from rospy_message_converter import message_converter
-from std_msgs.msg import String
-dictionary = { 'data': 'Howdy' }
-message = message_converter.convert_dictionary_to_ros_message('std_msgs/String', dictionary)
+```
+$ python --version && pip --version
 ```
 
-Convert a ROS message to a dictionary
+If you see an error like `python: command not found` or `pip: command not found`
+then you will need to install this:
 
-```python
-from rospy_message_converter import message_converter
-from std_msgs.msg import String
-message = String(data = 'Howdy')
-dictionary = message_converter.convert_ros_message_to_dictionary(message)
+- [Python installation](https://wiki.python.org/moin/BeginnersGuide/Download)
+- [Pip installation](https://pip.pypa.io/en/stable/installing/)
+
+Once these are installed you can just use `pip` to install the latest release of
+the CLI:
+
+```
+$ pip install panoptescli
 ```
 
-Convert JSON to a ROS message
+Alternatively, if you want to preview the next release you can install HEAD
+directly from GitHub (though be aware that this may contain
+bugs/untested/incomplete features):
 
-```python
-from rospy_message_converter import json_message_converter
-from std_msgs.msg import String
-json_str = '{"data": "Hello"}'
-message = json_message_converter.convert_json_to_ros_message('std_msgs/String', json_str)
+```
+$ pip install -U git+git://github.com/zooniverse/panoptes-cli.git
 ```
 
-Convert a ROS message to JSON
+To upgrade an existing installation to the latest version:
 
-```python
-from rospy_message_converter import json_message_converter
-from std_msgs.msg import String
-message = String(data = 'Hello')
-json_str = json_message_converter.convert_ros_message_to_json(message)
+```
+pip install -U panoptescli
 ```
 
-Test
-----
+## Built-in help
 
-To run the tests:
+Every command comes with a built in `--help` option, which explains how to use
+it.
 
-```bash
-catkin_make test
+```
+$ panoptes --help
+Usage: panoptes [OPTIONS] COMMAND [ARGS]...
+
+Options:
+  -e, --endpoint TEXT  Overides the default API endpoint
+  -a, --admin          Enables admin mode. Ignored if you're not logged in as
+                       an administrator.
+  --version            Show the version and exit.
+  --help               Show this message and exit.
+
+Commands:
+  configure    Sets default values for configuration options.
+  info         Displays version and environment information for debugging.
+  project      Contains commands for managing projects.
+  subject      Contains commands for retrieving information about subjects.
+  subject-set  Contains commands for managing subject sets.
+  user         Contains commands for retrieving information about users.
+  workflow     Contains commands for managing workflows.
 ```
 
-pre-commit Formatting Checks
-----------------------------
+```
+$ panoptes project --help
+Usage: panoptes project [OPTIONS] COMMAND [ARGS]...
 
-This repo has a [pre-commit](https://pre-commit.com/) check that runs in CI.
-You can use this locally and set it up to run automatically before you commit
-something. To install, use pip:
+  Contains commands for managing projects.
 
-```bash
-pip3 install --user pre-commit
+Options:
+  --help  Show this message and exit.
+
+Commands:
+  create    Creates a new project.
+  delete
+  download  Downloads project-level data exports.
+  info
+  ls        Lists project IDs and names.
+  modify    Changes the attributes of an existing project..
 ```
 
-To run over all the files in the repo manually:
+```
+$ panoptes subject-set upload-subjects --help
+Usage: panoptes subject-set upload-subjects [OPTIONS] SUBJECT_SET_ID
+                                            MANIFEST_FILES...
 
-```bash
-pre-commit run -a
+  Uploads subjects from each of the given MANIFEST_FILES.
+
+  Example with only local files:
+
+  $ panoptes subject-set upload-subjects 4667 manifest.csv
+
+  Local filenames will be automatically detected in the manifest and
+  uploaded, or filename columns can be specified with --file-column.
+
+  If you are hosting your media yourself, you can put the URLs in the
+  manifest and specify the column number(s):
+
+  $ panoptes subject-set upload-subjects -r 1 4667 manifest.csv
+
+  $ panoptes subject-set upload-subjects -r 1 -r 2 4667 manifest.csv
+
+  Any local files will still be detected and uploaded.
+
+Options:
+  -M, --allow-missing            Do not abort when creating subjects with no
+                                 media files.
+  -r, --remote-location INTEGER  Specify a field (by column number) in the
+                                 manifest which contains a URL to a remote
+                                 media location. Can be used more than once.
+  -m, --mime-type TEXT           MIME type for remote media. Defaults to
+                                 image/png. Can be used more than once, in
+                                 which case types are mapped one to one with
+                                 remote locations in the order they are given.
+                                 Has no effect without --remote-location.
+  -f, --file-column INTEGER      Specify a field (by column number) in the
+                                 manifest which contains a local file to be
+                                 uploaded. Can be used more than once.
+                                 Disables auto-detection of filename columns.
+  --help                         Show this message and exit.
 ```
 
-To run pre-commit automatically before committing in the local repo, install the git hooks:
+## Uploading non-image media types
 
-```bash
-pre-commit install
+If you wish to upload subjects with non-image media (e.g. audio or video),
+you will need to make sure you have the `libmagic` library installed. If you
+don't already have `libmagic`, please see the [dependency information for
+python-magic](https://github.com/ahupp/python-magic#dependencies) for more
+details.
+
+To check if `libmagic` is installed, run this command:
+
+```
+$ panoptes info
 ```
 
+If you see `libmagic: False` in the output then it isn't installed.
 
-License
--------
+## Command Line Examples
 
-Project is released under the BSD license.
+This readme does not list everything that the CLI can do. For a full list of
+commands and their options, use the built in help as described above.
 
-GitHub actions - Continuous Integration
----------------------------------------
+### Log in and optionally set the API endpoint
 
-[![Build Status](https://github.com/DFKI-NI/rospy_message_converter/actions/workflows/github-actions.yml/badge.svg)](https://github.com/DFKI-NI/rospy_message_converter/actions/workflows/github-actions.yml/)
+```
+$ panoptes configure
+username []:
+password:
+```
 
+Press enter without typing anything to keep the current value (shown in
+brackets). You probably don't need to change the endpoint, unless you're running
+your own copy of the Panoptes API.
 
-ROS Buildfarm
--------------
+### Create a new project
 
-|           | binary deb | source deb | devel | doc |
-|-----------|------------|------------|-------|-----|
-| kinetic | [![Build Status](http://build.ros.org/buildStatus/icon?job=Kbin_uX64__rospy_message_converter__ubuntu_xenial_amd64__binary)](http://build.ros.org/job/Kbin_uX64__rospy_message_converter__ubuntu_xenial_amd64__binary/) | [![Build Status](http://build.ros.org/buildStatus/icon?job=Ksrc_uX__rospy_message_converter__ubuntu_xenial__source)](http://build.ros.org/job/Ksrc_uX__rospy_message_converter__ubuntu_xenial__source/) | [![Build Status](http://build.ros.org/buildStatus/icon?job=Kdev__rospy_message_converter__ubuntu_xenial_amd64)](http://build.ros.org/job/Kdev__rospy_message_converter__ubuntu_xenial_amd64) | [![Build Status](http://build.ros.org/buildStatus/icon?job=Kdoc__rospy_message_converter__ubuntu_xenial_amd64)](http://build.ros.org/job/Kdoc__rospy_message_converter__ubuntu_xenial_amd64) |
-| melodic | [![Build Status](http://build.ros.org/buildStatus/icon?job=Mbin_uB64__rospy_message_converter__ubuntu_bionic_amd64__binary)](http://build.ros.org/job/Mbin_uB64__rospy_message_converter__ubuntu_bionic_amd64__binary) | [![Build Status](http://build.ros.org/buildStatus/icon?job=Msrc_uB__rospy_message_converter__ubuntu_bionic__source)](http://build.ros.org/job/Msrc_uB__rospy_message_converter__ubuntu_bionic__source/) | [![Build Status](http://build.ros.org/buildStatus/icon?job=Mdev__rospy_message_converter__ubuntu_bionic_amd64)](http://build.ros.org/job/Mdev__rospy_message_converter__ubuntu_bionic_amd64) | [![Build Status](http://build.ros.org/buildStatus/icon?job=Mdoc__rospy_message_converter__ubuntu_bionic_amd64)](http://build.ros.org/job/Mdoc__rospy_message_converter__ubuntu_bionic_amd64) |
-| noetic  | [![Build Status](http://build.ros.org/buildStatus/icon?job=Nbin_uF64__rospy_message_converter__ubuntu_focal_amd64__binary)](http://build.ros.org/job/Nbin_uF64__rospy_message_converter__ubuntu_focal_amd64__binary/) | [![Build Status](http://build.ros.org/buildStatus/icon?job=Nsrc_uF__rospy_message_converter__ubuntu_focal__source)](http://build.ros.org/job/Nsrc_uF__rospy_message_converter__ubuntu_focal__source/) | [![Build Status](http://build.ros.org/buildStatus/icon?job=Ndev__rospy_message_converter__ubuntu_focal_amd64)](http://build.ros.org/job/Ndev__rospy_message_converter__ubuntu_focal_amd64/) | [![Build Status](http://build.ros.org/buildStatus/icon?job=Ndoc__rospy_message_converter__ubuntu_focal_amd64)](http://build.ros.org/job/Ndoc__rospy_message_converter__ubuntu_focal_amd64/) |
+```
+$ panoptes project create "My Project" "This is a description of my project"
+*2797 zooniverse/my-project My Project
+```
+
+The `*` before the project ID indicates that the project is private.
+
+### Create a subject set in your new project
+
+```
+$ panoptes subject-set create 2797 "My first subject set"
+4667 My first subject set
+```
+
+### Make your project public
+
+```
+$ panoptes project modify --public 2797
+2797 zooniverse/my-project My Project
+```
+
+### Upload subjects
+
+```
+$ panoptes subject-set upload-subjects 4667 manifest.csv
+```
+
+Local filenames will be automatically detected in the manifest and uploaded. If
+you are hosting your media yourself, you can put the URLs in the manifest and
+specify the column number(s) and optionally set the file type if you're not
+uploading PNG images:
+
+```
+$ panoptes subject-set upload-subjects -m image/jpeg -r 1 4667 manifest.csv
+$ panoptes subject-set upload-subjects -r 1 -r 2 4667 manifest.csv
+```
+
+A manifest is a CSV file which contains the names of local media files to upload (one per column) or remote URLs (matching the `-r` option)
+and any other column is recorded as subject metadata, where the column name is the key and the row/column entry is the value, for example:
+
+file_name_1 | file_name_2 | metadata | !metadata_hidden_from_classification | #metadata_hidden_from_all
+-- | -- | -- | -- | --
+local_image_file_1.jpeg | local_image_file_2.jpeg | image_01 | giraffe | kenya_site_1
+
+### Resuming a failed upload
+
+If an upload fails for any reason, the CLI should detect the failure and give you the option of resuming the upload at a later time:
+
+```
+$ panoptes subject-set upload-subjects -m image/jpeg -r 1 4667 manifest.csv
+Uploading subjects  [------------------------------------]    0%  00:41:05
+Error: Upload failed.
+Would you like to save the upload state to resume the upload later? [Y/n]: y
+Enter filename to save to [panoptes-upload-4667.yaml]:
+```
+
+This will save a new manifest file which you can use to resume the upload. The new manifest file will be in YAML format rather than CSV, and the YAML file contains all the information about the original upload (including any command-line options you specified) along with a list of the subjects which have not yet been uploaded.
+
+To resume the upload, simply run the `upload-subjects` command specifying the same subject set ID with the new manifest file. Note that you do not need to include any other options that you originally specified (such as `-r`, `-m`, and so on):
+
+```
+$ panoptes subject-set upload-subjects 4667 panoptes-upload-4667.yaml
+```
+
+### Generate and download a classifications export
+
+```
+$ panoptes project download --generate 2797 classifications.csv
+```
+
+### Generate and download a talk comments export
+
+```
+$ panoptes project download --generate --data-type talk_comments 2797 classifications.csv
+```
+
+### List workflows in your project
+
+```
+$ panoptes workflow ls -p 2797
+1579 Example workflow 1
+2251 Example workflow 2
+```
+
+### Add a subject set to a workflow
+
+```
+$ panoptes workflow add-subject-sets 1579 4667
+```
+
+### List subject sets in a workflow
+
+```
+$ panoptes subject-set ls -w 1579
+4667 My first subject set
+```
+
+### List subject sets in a project
+
+```
+$ panoptes subject-set ls -p 2797
+```
+
+### Verify that subject set 4667 is in project 2797
+
+```
+$ panoptes subject-set ls -p 2797 4667
+```
+
+### Add known subjects to a subject set
+
+```
+# for known subjects with ids 3, 2, 1 and subject set with id 999
+$ panoptes subject-set add-subjects 999 3 2 1
+```
+
+## Debugging
+
+To view the various requests as sent to the Panoptes API as well as other info,
+include the env var `PANOPTES_DEBUG=true` before your command, like so:
+
+`PANOPTES_DEBUG=true panoptes workflow ls -p 1234`
+
+### Usage
+
+1. Run `docker-compose build` to build the containers. Note there are mulitple containers for different envs, see docker-compose.yml for more details
+
+2. Create and run all the containers with `docker-compose up`
+
+### Testing
+
+1. Use docker to run a testing environment bash shell and run test commands .
+    1. Run `docker-compose run --rm dev sh` to start an interactive shell in the container
+    1. Run `python -m unittest discover` to run the full test suite

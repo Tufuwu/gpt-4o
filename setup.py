@@ -1,11 +1,25 @@
-# ! DO NOT MANUALLY INVOKE THIS setup.py, USE CATKIN INSTEAD
+from setuptools import setup, find_packages
 
-from distutils.core import setup
-from catkin_pkg.python_setup import generate_distutils_setup
-
-d = generate_distutils_setup(
-    packages=['rospy_message_converter'],
-    package_dir={'': 'src'},
+setup(
+    name='panoptescli',
+    version='1.1.3',
+    url='https://github.com/zooniverse/panoptes-cli',
+    author='Adam McMaster',
+    author_email='adam@zooniverse.org',
+    description=(
+        'A command-line client for Panoptes, the API behind the Zooniverse'
+    ),
+    packages=find_packages(),
+    include_package_data=True,
+    install_requires=[
+        'Click>=6.7,<7.1',
+        'PyYAML>=5.1,<5.5',
+        'panoptes-client>=1.3,<2.0',
+        'humanize>=0.5.1,<1.1',
+        'pathvalidate>=0.29.0,<0.30',
+    ],
+    entry_points='''
+        [console_scripts]
+        panoptes=panoptes_cli.scripts.panoptes:cli
+    ''',
 )
-
-setup(**d)
