@@ -1,39 +1,30 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
+import setuptools
 
+with open("README.md", "r") as fh:
+    long_description = fh.read()
 
-from setuptools import setup, find_packages
+import versioneer
 
-
-with open('README.rst', 'rb') as f:
-    readme = f.read().decode('utf-8')
-
-with open('requirements.txt') as f:
-    requires = f.readlines()
-
-setup(
-    name='greenswitch',
-    version='0.0.12',
-    description=u'Battle proven FreeSWITCH Event Socket Protocol client implementation with Gevent.',
-    long_description=readme,
-    author=u'Ítalo Rossi',
-    author_email=u'italorossib@gmail.com',
-    url=u'https://github.com/evoluxbr/greenswitch',
-    license=u'MIT',
-    packages=find_packages(exclude=('tests', 'docs')),
+setuptools.setup(
+    name="removestar",
+    version=versioneer.get_version(),
+    cmdclass=versioneer.get_cmdclass(),
+    author="Aaron Meurer",
+    author_email="asmeurer@gmail.com",
+    description="A tool to automatically replace 'import *' imports with explicit imports in files",
+    long_description=long_description,
+    long_description_content_type="text/markdown",
+    url="https://www.asmeurer.com/removestar/",
+    packages=setuptools.find_packages(),
     classifiers=[
-        'Development Status :: 5 - Production/Stable',
-        'Intended Audience :: Developers',
-        'Programming Language :: Python',
-        'License :: OSI Approved :: MIT License',
-        'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.5',
-        'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7',
-        'Programming Language :: Python :: 3.8',
-        'Programming Language :: Python :: 3.9',
-        'Programming Language :: Python :: 3.10',
+        "Programming Language :: Python :: 3",
+        "License :: OSI Approved :: MIT License",
+        "Operating System :: OS Independent",
     ],
-    install_requires=requires
+    entry_points={'console_scripts': [ 'removestar = removestar.__main__:main']},
+    python_requires= '>=3.6',
+    install_requires=[
+        'pyflakes'
+    ],
+    license='MIT',
 )
