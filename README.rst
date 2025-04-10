@@ -1,110 +1,107 @@
-|actions|_ |pypi|_ |pyversions|_ |womm|_
-
-.. |actions| image:: https://github.com/wimglenn/pytest-structlog/actions/workflows/tests.yml/badge.svg
-.. _actions: https://github.com/wimglenn/pytest-structlog/actions/workflows/tests.yml/
-
-.. |pypi| image:: https://img.shields.io/pypi/v/pytest-structlog.svg
-.. _pypi: https://pypi.org/project/pytest-structlog
-
-.. |pyversions| image:: https://img.shields.io/pypi/pyversions/pytest-structlog.svg
-.. _pyversions:
-
-.. |womm| image:: https://cdn.rawgit.com/nikku/works-on-my-machine/v0.2.0/badge.svg
-.. _womm: https://github.com/nikku/works-on-my-machine
-
-
-pytest-structlog
+Django Swingtime
 ================
 
-Structured logging assertions.  pytest_ + structlog_ = ``pytest-structlog``.
+.. image:: https://github.com/dakrauth/django-swingtime/workflows/Test/badge.svg
+    :target: https://github.com/dakrauth/django-swingtime/actions
 
-|pytest|    |structlog|
+.. image:: https://badge.fury.io/py/django-swingtime.svg
+    :target: http://badge.fury.io/py/django-swingtime
 
-
-Installation:
--------------
-
-.. code-block:: bash
-
-   $ pip install pytest-structlog
-
-Usage:
-------
-
-The fixture name is ``log``. It has two attributes of interest: ``log.events`` is a list of events from captured log calls, and ``log.has`` is a helper function for asserting a single event was logged within the expected context.
-
-Suppose you have some library module, ``your_lib``, which is using ``structlog``:
-
-.. code-block:: python
-
-   # your_lib.py
-   from structlog import get_logger
-
-   logger = get_logger()
-
-   def spline_reticulator():
-       logger.info("reticulating splines")
-       for i in range(3):
-           logger.debug("processing", spline=i)
-       logger.info("reticulated splines", n_splines=3)
+:Version: 1.2.1
+:Demo: https://nerdfog.com/swingtime/
+:Download: https://pypi.org/project/django-swingtime/
+:Source: https://github.com/dakrauth/django-swingtime
+:Documentation: http://dakrauth.github.io/django-swingtime/ 
 
 
-Then your test suite might use assertions such as shown below:
+Welcome
+-------
 
-.. code-block:: python
+Swingtime is a `Django <http://www.djangoproject.com/>`_ application similar to
+a stripped-down version of iCal for Mac OS X or Google Calendar.
 
-   # test_your_lib.py
-   from your_lib import spline_reticulator
+Swingtime provides a ``models.Event`` model that acts as metadata container
+for one or more ``models.Occurrence`` objects, which describe specific
+start and end times.
 
-   def test_spline_reticulator(log):
-       assert len(log.events) == 0
-       spline_reticulator()
-       assert len(log.events) == 5
+Swingtime relies heavily upon both the ``datetime`` standard library package and
+the ``dateutil`` package, featuring direct support for the ``dateutil.rrule``
+interface to create occurrences.
 
-       # can assert on the event only
-       assert log.has("reticulating splines")
+A fairly simple example:
 
-       # can assert with subcontext
-       assert log.has("reticulated splines")
-       assert log.has("reticulated splines", n_splines=3)
-       assert log.has("reticulated splines", n_splines=3, level="info")
+.. code:: python
 
-       # but not incorrect context
-       assert not log.has("reticulated splines", n_splines=42)
-       assert not log.has("reticulated splines", key="bogus")
+    >>> from datetime import *
+    >>> from swingtime import models as swingtime
+    >>> et = swingtime.EventType.objects.create(abbr='work', label='Work Related Events')
+    >>> evt = swingtime.Event.objects.create(
+    ...     title='New TPS Cover Sheet',
+    ...     description='Kiss off, Lumbergh!',
+    ...     event_type=et
+    ... )
+    >>> evt.add_occurrences(datetime(2018,3,18,16), datetime(2018,3,18,16,15), count=5)
+    >>> for o in evt.occurrence_set.all():
+    ...     print(o)
+    ...
+    New TPS Cover Sheet: 2018-03-18T16:00:00
+    New TPS Cover Sheet: 2018-03-19T16:00:00
+    New TPS Cover Sheet: 2018-03-20T16:00:00
+    New TPS Cover Sheet: 2018-03-21T16:00:00
+    New TPS Cover Sheet: 2018-03-22T16:00:00
 
-       # can assert with the event dicts directly
-       assert log.events == [
-           {"event": "reticulating splines", "level": "info"},
-           {"event": "processing", "level": "debug", "spline": 0},
-           {"event": "processing", "level": "debug", "spline": 1},
-           {"event": "processing", "level": "debug", "spline": 2},
-           {"event": "reticulated splines", "level": "info", "n_splines": 3},
-       ]
+A bit more elaborate example, using the the convenience function ``models.create_event``:
 
-       # can use membership to check for a single event's data
-       assert {"event": "reticulating splines", "level": "info"} in log.events
+.. code:: python
 
-       # can use >= to specify only the events you're interested in
-       assert log.events >= [
-           {"event": "processing", "level": "debug", "spline": 0},
-           {"event": "processing", "level": "debug", "spline": 2},
-       ]
+    >>> # pay day is the last Friday of the month at 5pm
+    >>> evt = swingtime.create_event(
+    ...     'Pay day',
+    ...     ('pay', 'Payroll'), # alternate means to add EventType on the fly
+    ...     freq=rrule.MONTHLY,
+    ...     byweekday=rrule.FR(-1),
+    ...     until=datetime(2013,8,1),
+    ...     start_time=datetime(2013,4,1,17)
+    ... )
+    >>> for o in evt.occurrence_set.all():
+    ...     print(o)
+    ...
+    Pay day: 2013-04-26T17:00:00
+    Pay day: 2013-05-31T17:00:00
+    Pay day: 2013-06-28T17:00:00
+    Pay day: 2013-07-26T17:00:00
 
-       # or put the comparison the other way around if you prefer
-       assert [
-           {"event": "processing", "level": "debug", "spline": 0},
-           {"event": "processing", "level": "debug", "spline": 2},
-       ] <= log.events
+Demo
+----
 
-       # note: comparisons are order sensitive!
-       assert not [
-           {"event": "processing", "level": "debug", "spline": 2},
-           {"event": "processing", "level": "debug", "spline": 0},
-       ] <= log.events
+To view a demo, `click here <https://nerdfog.com/swingtime/>`_.
+
+To run a local demo using Docker, do the following:
+
+.. code:: bash
+
+    $ docker build -t swingtime .
+    $ docker run -p 8000:80 -d swingtime:latest
+
+And browse to `localhost:8000 <http://localhost:8000>`_.
 
 
-.. _pytest: https://docs.pytest.org/
-.. _structlog: https://www.structlog.org/
-.. |pytest| image:: https://user-images.githubusercontent.com/6615374/46903931-515eef00-cea2-11e8-8945-980ddbf0a053.png
-.. |structlog| image:: https://user-images.githubusercontent.com/6615374/46903937-5b80ed80-cea2-11e8-9b85-d3f071180fe1.png
+Features
+--------
+
+* Support for adding complex event occurrences via ``dateutil``
+* Ready-made ``forms.MultipleOccurrenceForm`` for handling complex input
+* Daily, monthly, and annual view functions
+* Grid-based daily view generator, complete with alternating or sequential
+  ``EventType`` CSS-class handling
+* Slightly better than average documentation, a few test cases, and commented code
+* Active support (I have to eat my own dogfood)
+* Built-in demo project / application
+
+Requirements
+------------
+
+* Python 3.6+
+* `Django 2.2+ <http://www.djangoproject.com/download/>`_
+* `python-dateutil <http://labix.org/python-dateutil>`_.
+
