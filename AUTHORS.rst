@@ -1,12 +1,19 @@
-Author
-------
-- Steven Myint (https://github.com/myint)
+=======
+Credits
+=======
 
-Patches
--------
-- Cheng Xi Bao (https://github.com/happlebao)
-- Andy Hayden (https://github.com/hayd)
-- Manuel Kaufmann (https://github.com/humitos)
-- Peter Boothe (https://github.com/pboothe)
-- Kapshuna Alexander (https://github.com/kapsh)
-- Serhiy Yevtushenko (https://github.com/serhiy-yevtushenko)
+Maintainers
+----------------
+
+* João Luiz Lorencetti - `@jllorencetti`_
+
+Contributors
+------------
+
+* Jair Henrique - `@jairhenrique`_
+* Tawonga - `@tawonga`_
+
+.. _`@jllorencetti`: https://github.com/jllorencetti
+.. _`@jairhenrique`: https://github.com/jairhenrique
+.. _`@tawonga`: https://github.com/tawonga
+.. _`@MatheusBrochi`: https://github.com/MatheusBrochi
