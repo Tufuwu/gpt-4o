@@ -10,10 +10,11 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     strategy:
       matrix:
-        python-version: ['3.8', '3.9']
+        python-version: ['3.6', '3.7', '3.8']
+        django-version: ['django21', 'django22', 'django30', 'django31']
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
@@ -21,14 +22,13 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
-      run: pip install -r requirements.txt
-    - name: Run tests
       run: |
-        if [ $(python -c "import sys; print(sys.version_info.minor)") -lt 7 ]; then
-            nosetests
-        else
-            nosetests --with-coverage --cover-package=discogs_client
-      shell: bash
-    - name: Upload coverage to Coveralls
-      if: success()
-      uses: coverallsapp/github-action@v2
+        python -m pip install --upgrade pip
+        pip install tox coverage
+    - name: Run tests
+      env:
+        TOX_ENV: py${{ matrix.python-version[0] }}${{ matrix.python-version[2:] }}-${{ matrix.django-version }}
+      run: tox -r -e $TOX_ENV
+    - name: Upload coverage to Codecov
+      if: ${{ success() }}
+      run: bash <(curl -s https://codecov.io/bash)
