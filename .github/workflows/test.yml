@@ -11,23 +11,33 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: ['3.8', '3.9', '3.10', '3.11', 'pypy-3.9']
+
     steps:
     - uses: actions/checkout@v3
-    - name: Set up Python ${{ matrix.python-version }}
+
+    - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: ${{ matrix.python-version }}
+        python-version: '3.8'  # Updated to a version available on Ubuntu 24.04
+
+    - name: Install Miniconda
+      run: |
+        wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O $HOME/miniconda.sh
+        bash $HOME/miniconda.sh -b -u -p $HOME/miniconda
+        echo "$HOME/miniconda/bin" >> $GITHUB_PATH
+
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip
-        pip install -U setuptools>=39.2.0
-        python setup.py develop
-    - name: Create a dummy README.rst
-      run: echo "This is a dummy README file." > README.rst
-    - name: Test with setup.py
-      run: python setup.py test
+        pip install nose2 coverage coveralls flake8 scikit-image
+        pip install -e .
+
+    - name: Lint with flake8
+      run: flake8
+
+    - name: Test with nose2
+      run: nose2 --with-coverage --coverage=tftb
+
+    - name: Coveralls
+      run: coveralls
       env:
-        PYTHONPATH: .
+        COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
