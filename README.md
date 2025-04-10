@@ -1,25 +1,12 @@
-# tftb
 
-tftb (Time-frequency toolbox) is a Python module for time-frequency analysis and visualization
-build with SciPy and matplotlib.
+Ampoule - a process pool for Twisted, based on AMP
+==================================================
 
-The tftb project began as a Python implementation of the TFTB toolbox developed by
-François Auger, Olivier Lemoine, Paulo Gonçalvès and Patrick Flandrin. While this project and the
-MATLAB implementation (henceforth referred to as TFTB) are similar in the core algorithms and the
-basic code organization, the very nature of the Python programming language has motivated a very
-different approach in architecture of PyTFTB (differences between the two packages have been
-discussed in detail [here](https://tftb.readthedocs.io/en/latest/introduction.html#comparison-of-tftb-and-pytftb)).
+Ampoule is a process pool written on top of
+[Twisted](https://twistedmatrix.com/). Its name comes from the use of
+[AMP](https://amp-protocol.net/) as the default communication protocol between
+the pool and all its children.
 
-
-## Installation
-
-tftb requires:
-  - Python (>= 3.5)
-  - NumPy
-  - SciPy
-  - Matplotlib
-
-Install tftb with pip as follows:
-```bash
-$ pip install tftb
-```
+It provides an API very close to that of the built-in Twisted `ThreadPool`. As
+an helper function it also provides a `deferToAMPProcess` function that creates
+the `ProcessPool` and submits jobs to it.
