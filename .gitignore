@@ -1,16 +1,13 @@
-syntax: glob
+# Python
 *.pyc
-*.egg-info
-*.egg
-EGG-INFO
-dist
-build
-py2*
-py3*
-.tox
-*.wpr
-*.wpu
-*.bak
-*.class
-.venv
-.env
+/*.egg-info
+/.eggs
+/dist
+
+# coverage
+/.coverage
+/htmlcov
+
+# tests
+*.vcd
+*.gtkw
