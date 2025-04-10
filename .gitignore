@@ -1,4 +1,7 @@
-venv/
-__pycache__/
-*.swp
-.coverage
+/doc/_build
+__pycache__
+*.pyc
+docs/
+*~
+*#
+/.coverage
