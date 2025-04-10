@@ -1,4 +1,4 @@
-name: Python package
+name: CI
 
 on:
   push:
@@ -14,17 +14,20 @@ jobs:
 
     strategy:
       matrix:
-        python-version: ['3.7', '3.8', '3.9', '3.10', '3.11']
+        python-version: ['3.8', '3.9', '3.10', '3.11']
 
     steps:
     - uses: actions/checkout@v3
+
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
+
     - name: Install dependencies
       run: |
-        CFLAGS="-O0" pip install . --upgrade
-    - name: Run tests
-      run: |
-        ./runtests.sh
+        npm install -g jshint
+        pip install -r requirements.txt
+
+    - name: Run make
+      run: make
