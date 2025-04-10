@@ -1,36 +1,23 @@
-import os
-from setuptools import setup, find_packages
+from setuptools import setup
 
-f = open(os.path.join(os.path.dirname(__file__), 'README.rst'))
-readme = f.read()
-f.close()
-
-setup(
-    name='micawber',
-    version='0.5.1',
-    description='a small library for extracting rich content from urls',
-    long_description=readme,
-    author='Charles Leifer',
-    author_email='coleifer@gmail.com',
-    url='http://github.com/coleifer/micawber/',
-    packages=[p for p in find_packages() if not p.startswith('examples')],
-    package_data = {
-        'micawber': [
-            'contrib/mcdjango/templates/micawber/*.html',
-        ],
-    },
-    classifiers=[
-        'Development Status :: 4 - Beta',
-        'Environment :: Web Environment',
-        'Intended Audience :: Developers',
-        'License :: OSI Approved :: MIT License',
-        'Operating System :: OS Independent',
-        'Programming Language :: Python',
-        'Programming Language :: Python :: 2.6',
-        'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3.2',
-        'Programming Language :: Python :: 3.3',
-        'Framework :: Django',
-    ],
-    test_suite='runtests.runtests',
-)
+setup(name='cycler',
+      version='0.10.0',
+      author='Thomas A Caswell',
+      author_email='matplotlib-users@python.org',
+      py_modules=['cycler'],
+      description='Composable style cycles',
+      url='https://github.com/matplotlib/cycler',
+      platforms='Cross platform (Linux, Mac OSX, Windows)',
+      license="BSD",
+      python_requires='>=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*',
+      classifiers=['License :: OSI Approved :: BSD License',
+                   'Development Status :: 4 - Beta',
+                   'Programming Language :: Python :: 2',
+                   'Programming Language :: Python :: 2.7',
+                   'Programming Language :: Python :: 3',
+                   'Programming Language :: Python :: 3.4',
+                   'Programming Language :: Python :: 3.5',
+                   'Programming Language :: Python :: 3.6',
+                   ],
+      keywords='cycle kwargs',
+      )
