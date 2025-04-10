@@ -1,6 +1,5 @@
-recursive-include streamparse *
-include *.rst
-include *.md
-include *.txt
-global-exclude *.pyc
-global-exclude __pycache__
+include MANIFEST.in
+include LICENSE
+include README.rst
+include runtests.py
+recursive-include micawber/contrib/mcdjango/templates *
