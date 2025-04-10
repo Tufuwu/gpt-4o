@@ -1,19 +1,19 @@
-name: Python package
+name: Python application
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
   pull_request:
-    branches:
-      - main
+    branches: [main]
 
 jobs:
   test:
     runs-on: ubuntu-latest
+
     strategy:
       matrix:
         python-version: ['3.8', '3.9', '3.10', '3.11']
+
     steps:
     - uses: actions/checkout@v3
     - name: Set up Python ${{ matrix.python-version }}
@@ -21,8 +21,13 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
-      run: pip install tox
+      run: |
+        pip install flake8
+        pip install -r requirements.txt
     - name: Run tests
-      run: tox
+      run: |
+        flake8 .
+        sed -i.bak "s/^SECRET_KEY = ''$/SECRET_KEY = 'randomstring'/g" tramcar/settings.py
+        python manage.py test
       env:
-        TOX_PARALLEL_NO_SPINNER: 1
+        PYTHONPATH: "${{ github.workspace }}"
