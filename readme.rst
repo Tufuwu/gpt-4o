@@ -1,184 +1,127 @@
-=============
-Feedgenerator
-=============
+pyroma
+======
 
-This module can be used to generate web feeds in both ATOM and RSS format. It
-has support for extensions. Included is for example an extension to produce
-Podcasts.
+Pyroma rhymes with aroma, and is a product aimed at giving a rating of how well
+a Python project complies with the best practices of the Python packaging
+ecosystem, primarily PyPI, pip, Distribute etc, as well as a list of issues that
+could be improved.
 
-It is licensed under the terms of both, the FreeBSD license and the LGPLv3+.
-Choose the one which is more convenient for you. For more details have a look
-at license.bsd and license.lgpl.
+The aim of this is both to help people make a project that is nice and usable,
+but also to improve the quality of Python third-party software, making it easier
+and more enjoyable to use the vast array of available modules for Python.
 
-More details about the project:
+It's written so that there are a library with methods to call from Python, as
+well as a script, also called pyroma.
 
-- `Repository <https://github.com/lkiesow/python-feedgen>`_
-- `Documentation <https://lkiesow.github.io/python-feedgen/>`_
-- `Python Package Index <https://pypi.python.org/pypi/feedgen/>`_
+It can be run on a project directory before making a release:
 
+    $ pyroma .
 
-------------
-Installation
-------------
+On a distribution before uploading it to the CheeseShop:
 
-**Prebuild packages**
+    $ pyroma pyroma-1.0.tar.gz
 
-If your distribution includes this project as package, like Fedora Linux does,
-you can simply use your package manager to install the package. For example::
+Or you can give it a package name on CheeseShop:
 
-    $ dnf install python3-feedgen
+    $ pyroma pyroma
 
+Giving it a name on CheeseShop is the most extensive test, as it will
+test for several things isn't otherwise tested.
 
-**Using pip**
+In all cases the output is similar::
 
-You can also use pip to install the feedgen module. Simply run::
-
-    $ pip install feedgen
-
-
--------------
-Create a Feed
--------------
-
-To create a feed simply instantiate the FeedGenerator class and insert some
-data:
-
-.. code-block:: python
-
-    from feedgen.feed import FeedGenerator
-    fg = FeedGenerator()
-    fg.id('http://lernfunk.de/media/654321')
-    fg.title('Some Testfeed')
-    fg.author( {'name':'John Doe','email':'john@example.de'} )
-    fg.link( href='http://example.com', rel='alternate' )
-    fg.logo('http://ex.com/logo.jpg')
-    fg.subtitle('This is a cool feed!')
-    fg.link( href='http://larskiesow.de/test.atom', rel='self' )
-    fg.language('en')
-
-Note that for the methods which set fields that can occur more than once in a
-feed you can use all of the following ways to provide data:
-
-- Provide the data for that element as keyword arguments
-- Provide the data for that element as dictionary
-- Provide a list of dictionaries with the data for several elements
-
-Example:
-
-.. code-block:: python
-
-    fg.contributor( name='John Doe', email='jdoe@example.com' )
-    fg.contributor({'name':'John Doe', 'email':'jdoe@example.com'})
-    fg.contributor([{'name':'John Doe', 'email':'jdoe@example.com'}, ...])
-
------------------
-Generate the Feed
------------------
-
-After that you can generate both RSS or ATOM by calling the respective method:
-
-.. code-block:: python
-
-    atomfeed = fg.atom_str(pretty=True) # Get the ATOM feed as string
-    rssfeed  = fg.rss_str(pretty=True) # Get the RSS feed as string
-    fg.atom_file('atom.xml') # Write the ATOM feed to a file
-    fg.rss_file('rss.xml') # Write the RSS feed to a file
+    ------------------------------
+    Checking .
+    Found pyroma
+    ------------------------------
+    The packages long_description is quite short.
+    ------------------------------
+    Final rating: 9/10
+    Cottage Cheese
+    ------------------------------
 
 
-----------------
-Add Feed Entries
-----------------
+Tests
+-----
 
-To add entries (items) to a feed you need to create new FeedEntry objects and
-append them to the list of entries in the FeedGenerator. The most convenient
-way to go is to use the FeedGenerator itself for the instantiation of the
-FeedEntry object:
+This is the list of checks that are currently performed:
 
-.. code-block:: python
+* The package should have a name, a version and a Description.
+  If it does not, it will receive a rating of 0.
 
-    fe = fg.add_entry()
-    fe.id('http://lernfunk.de/media/654321/1')
-    fe.title('The First Episode')
-    fe.link(href="http://lernfunk.de/feed")
+* The version number should be a string. A floating point number will
+  work with distutils, but most other tools will fail.
 
-The FeedGenerator's method `add_entry(...)` will generate a new FeedEntry
-object, automatically append it to the feeds internal list of entries and
-return it, so that additional data can be added.
+* The version number should comply to PEP386.
 
-----------
-Extensions
-----------
+* The description should be over 10 characters, and the long_description
+  should be over a 100 characters.
 
-The FeedGenerator supports extensions to include additional data into the XML
-structure of the feeds. Extensions can be loaded like this:
+* Pyroma will convert your long_description to HTML using Docutils, to
+  verify that it is possible. This guarantees pretty formatting of your
+  description on PyPI. As long as Docutils can convert it, this passes,
+  even if there are warnings or error in the conversion. These warnings
+  and errors are printed to stdout so you will see them.
 
-.. code-block:: python
+  NB! Currently this doesn't change the rating, this is because Docutils
+  no longer raises an error during this process, so I have to rewrite the
+  test. Once it's reinstated, incorrect syntax will be fatal.
 
-    fg.load_extension('someext', atom=True, rss=True)
+* You should have the following meta data fields filled in:
+  classifiers, keywords, author, author_email, url and license.
 
-This example would try to load the extension “someext” from the file
-`ext/someext.py`.  It is required that `someext.py` contains a class named
-“SomextExtension” which is required to have at least the two methods
-`extend_rss(...)` and `extend_atom(...)`. Although not required, it is strongly
-suggested to use `BaseExtension` from `ext/base.py` as superclass.
+* You should have classifiers specifying the supported Python versions.
 
-`load_extension('someext', ...)` will also try to load a class named
-“SomextEntryExtension” for every entry of the feed. This class can be located
-either in the same file as SomextExtension or in `ext/someext_entry.py` which
-is suggested especially for large extensions.
+* You should have a classifier specifying the project license.
 
-The parameters `atom` and `rss` control if the extension is used for ATOM and
-RSS feeds respectively. The default value for both parameters is `True`,
-meaning the extension is used for both kinds of feeds.
+* If you are checking on a PyPI package, and not a local directory or
+  local package, pyroma will check the number of owners the package has
+  on PyPI. It should be three or more, to minimize the "Bus factor",
+  the risk of the index owners suddenly going off-line for whatever reason.
 
-**Example: Producing a Podcast**
-
-One extension already provided is the podcast extension. A podcast is an RSS
-feed with some additional elements for ITunes.
-
-To produce a podcast simply load the `podcast` extension:
-
-.. code-block:: python
-
-    from feedgen.feed import FeedGenerator
-    fg = FeedGenerator()
-    fg.load_extension('podcast')
-    ...
-    fg.podcast.itunes_category('Technology', 'Podcasting')
-    ...
-    fe = fg.add_entry()
-    fe.id('http://lernfunk.de/media/654321/1/file.mp3')
-    fe.title('The First Episode')
-    fe.description('Enjoy our first episode.')
-    fe.enclosure('http://lernfunk.de/media/654321/1/file.mp3', 0, 'audio/mpeg')
-    ...
-    fg.rss_str(pretty=True)
-    fg.rss_file('podcast.xml')
-
-If the FeedGenerator class is used to load an extension, it is automatically
-loaded for every feed entry as well.  You can, however, load an extension for a
-specific FeedEntry only by calling `load_extension(...)` on that entry.
-
-Even if extensions are loaded, they can be temporarily disabled during the feed
-generation by calling the generating method with the keyword argument
-`extensions` set to `False`.
-
-**Custom Extensions**
-
-If you want to load custom extensions which are not part of the feedgen
-package, you can use the method `register_extension` instead. You can directly
-pass the classes for the feed and the entry extension to this method meaning
-that you can define them everywhere.
+* If you are checking on a PyPI package, and not a local directory or
+  local package, pyroma will check that you have uploaded a source
+  distribution, and not just binary distributions.
 
 
----------------------
-Testing the Generator
----------------------
+Version control integration
+---------------------------
 
-You can test the module by simply executing::
+With `pre-commit <https://pre-commit.com>`_, pyroma can be run whenever you
+commit your work by adding the following to your ``.pre-commit-config.yaml``:
 
-    $ python -m feedgen
+.. code-block:: yaml
 
-If you want to have a look at the code for this test to have a working code
-example for a whole feed generation process, you can find it in the
-`__main__.py <https://github.com/lkiesow/python-feedgen/blob/master/feedgen/__main__.py>`_.
+    repos:
+    -   repo: https://github.com/regebro/pyroma
+        rev: "3.2"
+        hooks:
+        -   id: pyroma
+
+
+Credits
+-------
+
+The project was created by Lennart Regebro, regebro@gmail.com
+
+The name "Pyroma" was coined by Wichert Akkerman, wichert@wiggy.net
+
+Contributors:
+
+  * Godefroid Chapelle
+  * Dmitry Vakhrushev
+  * hugovk
+  * Jeff Quast
+  * Maurits van Rees
+  * Hervé Beraud
+  * Érico Andrei
+  * Jakub Wilk
+  * Andreas Lutro
+  * Scott Colby
+  * Andrew Murray
+  * Nikita Sobolev
+  * Charles Tapley Hoyt
+  * Max Tyulin
+  * Michael Howitz
+  * Florian Bruhin
+  * Christopher A.M. Gerlach

@@ -1,51 +1,47 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
+from setuptools import setup, find_packages
 
-from setuptools import setup
+version = "3.2.dev0"
 
-import feedgen.version
+with open("README.rst", encoding="UTF-8") as file:
+    long_description = file.read() + "\n"
 
-packages = ['feedgen', 'feedgen/ext']
+with open("HISTORY.txt", encoding="UTF-8") as file:
+    long_description += file.read()
 
-setup(name='feedgen',
-      packages=packages,
-      version=feedgen.version.version_full_str,
-      description='Feed Generator (ATOM, RSS, Podcasts)',
-      author='Lars Kiesow',
-      author_email='lkiesow@uos.de',
-      url='https://lkiesow.github.io/python-feedgen',
-      keywords=['feed', 'ATOM', 'RSS', 'podcast'],
-      license='FreeBSD and LGPLv3+',
-      install_requires=['lxml', 'python-dateutil'],
-      classifiers=[
-        'Development Status :: 5 - Production/Stable',
-        'Intended Audience :: Developers',
-        'Intended Audience :: Information Technology',
-        'Intended Audience :: Science/Research',
-        'License :: OSI Approved :: BSD License',
-        'License :: OSI Approved :: GNU Lesser General Public License v3 ' +
-        'or later (LGPLv3+)',
-        'Natural Language :: English',
-        'Operating System :: OS Independent',
-        'Programming Language :: Python',
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 3',
-        'Topic :: Communications',
-        'Topic :: Internet',
-        'Topic :: Text Processing',
-        'Topic :: Text Processing :: Markup',
-        'Topic :: Text Processing :: Markup :: XML'
-        ],
-      test_suite="tests",
-      long_description='''\
-Feedgenerator
-=============
-
-This module can be used to generate web feeds in both ATOM and RSS format. It
-has support for extensions. Included is for example an extension to produce
-Podcasts.
-
-It is licensed under the terms of both, the FreeBSD license and the LGPLv3+.
-Choose the one which is more convenient for you. For more details have a look
-at license.bsd and license.lgpl.
-''')
+setup(
+    name="pyroma",
+    version=version,
+    description="Test your project's packaging friendliness",
+    long_description=long_description,
+    python_requires=">=3.6",
+    classifiers=[
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3 :: Only",
+        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: Implementation :: PyPy",
+        "License :: OSI Approved :: MIT License",
+        "Development Status :: 5 - Production/Stable",
+    ],
+    keywords=["pypi", "quality", "testing"],
+    author="Lennart Regebro",
+    author_email="regebro@gmail.com",
+    url="https://github.com/regebro/pyroma",
+    project_urls={"Source Code": "https://github.com/regebro/pyroma"},
+    license="MIT",
+    packages=find_packages(exclude=["ez_setup"]),
+    include_package_data=True,
+    zip_safe=False,
+    install_requires=[
+        "setuptools",
+        "docutils",
+        "pygments",
+    ],
+    entry_points={
+        "console_scripts": ["pyroma = pyroma:main"],
+        "zest.releaser.prereleaser.before": ["pyroma = pyroma:zester"],
+    },
+    test_suite="pyroma",
+)
