@@ -1,2 +1,7 @@
-include license.bsd license.lgpl readme.rst
-recursive-include docs *.html *.css *.png *.gif *.js
+include *.txt
+recursive-include pyroma/testdata *.py *.txt *.cfg *.html
+prune pyroma/testdata/complete/*.egg
+graft pyroma/testdata/distributions
+include tox.ini
+include DEVELOPMENT.rst
+include Makefile
