@@ -1,10 +1,11 @@
-*.egg-info
 *.pyc
+*.swp
+.coverage
+.vagrant
+bashlex/parser.out
+bashlex/parsetab.py
 
-/.venv*
-/build
-/dist
-
-.mypy_cache
-
-__pycache__
+build/
+dist/
+bashlex.egg-info/
+*env*/
