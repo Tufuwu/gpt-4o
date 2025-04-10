@@ -1,90 +1,58 @@
-import io
+"""
+Setup for pygount.
+
+Developer cheat sheet
+---------------------
+
+Tag a release (simply replace ``1.x.x`` with the current version number)::
+
+  $ git tag -a -m "Tagged version 1.x.x" v1.x.x
+  $ git push --tags
+
+Upload release to PyPI::
+
+  $ python3 setup.py bdist_wheel
+  $ twine upload dist/*.whl
+"""
+# Copyright (c) 2016-2020, Thomas Aglassinger.
+# All rights reserved. Distributed under the BSD License.
 import os
-import sys
-from shutil import rmtree
+from setuptools import setup, find_packages
 
-from setuptools import find_packages, setup, Command
-
-VERSION = '1.3.3'
-
-here = os.path.abspath(os.path.dirname(__file__))
-with io.open(os.path.join(here, 'README.md'), encoding='utf-8') as f:
-    README = '\n' + f.read()
+from pygount import __version__
 
 
-class UploadCommand(Command):
-    """Support setup.py upload."""
-
-    description = 'Build and publish the package.'
-    user_options = []
-
-    @staticmethod
-    def status(s):
-        """Prints things in bold."""
-        print('\033[1m{0}\033[0m'.format(s))
-
-    def initialize_options(self):
-        pass
-
-    def finalize_options(self):
-        pass
-
-    def run(self):
-        try:
-            self.status('Removing previous builds...')
-            rmtree(os.path.join(here, 'dist'))
-        except OSError:
-            pass
-
-        self.status('Building Source and Wheel (universal) distribution...')
-        os.system('{0} setup.py sdist bdist_wheel --universal'.format(sys.executable))
-
-        self.status('Uploading the package to PyPI via Twine...')
-        os.system('twine upload dist/*')
-
-        self.status('Pushing git tags...')
-        os.system('git tag {0}'.format(VERSION))
-        os.system('git push --tags')
-
-        sys.exit()
-
+# Read the long description from the README file.
+_setup_folder = os.path.dirname(__file__)
+with open(os.path.join(_setup_folder, "README.md"), encoding="utf-8") as readme_file:
+    long_description = readme_file.read()
 
 setup(
-    name='django-rest-multitokenauth',
-    version=VERSION,
-    packages=find_packages(exclude=["tests", "*.tests", "*.tests.*", "tests.*"]),
-    install_requires=[
-        'django-ipware==3.0.*',
-    ],
-    include_package_data=True,
-    license='BSD License',
-    description='An extension of django rest frameworks token auth, providing multiple authentication tokens per user',
-    long_description=README,
-    long_description_content_type='text/markdown',
-    url='https://github.com/anexia-it/django-rest-multitokenauth',
-    author='Harald Nezbeda',
-    author_email='hnezbeda@anexia-it.com',
+    name="pygount",
+    version=__version__,
+    description="count source lines of code (SLOC) using pygments",
+    long_description=long_description,
+    url="https://github.com/roskakori/pygount",
+    author="Thomas Aglassinger",
+    author_email="roskakori@users.sourceforge.net",
+    license="BSD",
     classifiers=[
-        'Development Status :: 5 - Production/Stable',
-        'Environment :: Web Environment',
-        'Framework :: Django',
-        'Framework :: Django :: 2.2',
-        'Framework :: Django :: 3.0',
-        'Framework :: Django :: 3.1',
-        'Intended Audience :: Developers',
-        'License :: OSI Approved :: BSD License',
-        'Operating System :: OS Independent',
-        'Programming Language :: Python',
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.5',
-        'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7',
-        'Programming Language :: Python :: 3.8',
-        'Topic :: Internet :: WWW/HTTP',
-        'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
+        "Development Status :: 5 - Production/Stable",
+        "Environment :: Console",
+        "Intended Audience :: Developers",
+        "License :: OSI Approved :: BSD License",
+        "Natural Language :: English",
+        "Operating System :: OS Independent",
+        "Programming Language :: Python :: 3 :: Only",
+        "Programming Language :: Python :: 3.5",
+        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
+        "Topic :: Software Development",
     ],
-    # $ setup.py upload support.
-    cmdclass={
-        'upload': UploadCommand,
-    },
+    keywords=["code analysis", "count", "SLOC"],
+    packages=find_packages(exclude=["tests"]),
+    install_requires=["pygments>=2.0"],
+    python_requires=">=3.5",
+    entry_points={"console_scripts": ["pygount=pygount.command:main"]},
 )

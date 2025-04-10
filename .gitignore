@@ -1,11 +1,46 @@
-*.pyc
-__pycache__
-*.pyo
-dist/**
-*.egg-info*
-.idea/
-venv/
-build/
-db.sqlite3
-dist/
+*.py[cod]
 
+# C extensions
+*.so
+
+# Packages
+*.egg
+*.egg-info
+build
+dist
+eggs
+parts
+bin
+var
+sdist
+develop-eggs
+.installed.cfg
+lib
+lib64
+
+# Installer logs
+pip-log.txt
+
+# Unit test / coverage reports
+.coverage
+.tox
+.venv
+coverage.xml
+nosetests.xml
+
+# Translations
+*.mo
+
+# Mr Developer
+.mr.developer.cfg
+.project
+.pydevproject
+
+# Various
+/build/
+/dist/
+/cloc.xml
+/tests/.temp/
+/.idea
+/venv/
+/htmlcov/
