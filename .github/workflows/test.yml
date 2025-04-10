@@ -1,4 +1,4 @@
-name: Python package
+name: CI
 
 on:
   push:
@@ -12,30 +12,34 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        python-version: ['3.8', '3.9', '3.10']
+    services:
+      docker:
+        image: docker:stable-dind
+        options: --privileged
 
     steps:
     - uses: actions/checkout@v3
 
-    - name: Set up Python ${{ matrix.python-version }}
+    - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: ${{ matrix.python-version }}
+        python-version: '3.9'
 
-    - name: Install dependencies
+    - name: Install Docker
       run: |
-        make
-        pip install poetry
-        poetry install
-      env:
-        CFLAGS: "-std=c99"
+        curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+        sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+        sudo apt-get update
+        sudo apt-get -y -o Dpkg::Options::="--force-confnew" install docker-ce
 
-    - name: Run tests
-      run: make tests
+    - name: Build Docker image
+      run: docker build -t draft-kings-fun .
 
-    - name: Upload coverage to Codecov
-      env:
-        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-      run: bash <(curl -s https://codecov.io/bash)
+    - name: Install Flake8
+      run: docker run draft-kings-fun pip install flake8
+
+    - name: Run Flake8
+      run: docker run draft-kings-fun flake8 draftfast
+
+    - name: Run Tests
+      run: docker run draft-kings-fun nosetests --with-coverage --cover-package=.
