@@ -1,46 +1,79 @@
 #!/usr/bin/env python
-from setuptools import setup, find_packages
-from entangled import __version__
+# -*- coding: utf-8 -*-
+#
+# Copyright 2015-2019 by Hartmut Goebel <h.goebel@crazy-compilers.com>
+#
+# This file is part of unittest2pytest.
+#
+# unittest2pytest is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+
+from setuptools import setup
+import re
 
 
-with open('README.md') as fh:
-    long_description = fh.read()
+def get_version(filename):
+    """
+    Return package version as listed in `__version__` in `filename`.
+    """
+    init_py = open(filename).read()
+    return re.search("__version__ = ['\"]([^'\"]+)['\"]", init_py).group(1)
 
 
-CLASSIFIERS = [
-    'Development Status :: 5 - Production/Stable',
-    'Environment :: Web Environment',
-    'Framework :: Django',
-    'Intended Audience :: Developers',
-    'License :: OSI Approved :: MIT License',
-    'Operating System :: OS Independent',
-    'Programming Language :: Python',
-    'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
-    'Programming Language :: Python :: 3.7',
-    'Programming Language :: Python :: 3.8',
-    'Programming Language :: Python :: 3.9',
-    'Programming Language :: Python :: 3.10',
-    'Framework :: Django :: 3.2',
-    'Framework :: Django :: 4.0',
-]
+version = get_version('unittest2pytest/__init__.py')
+
+
+def read(filename):
+    return open(filename, 'r', encoding='utf-8').read()
+
+
+long_description = '\n\n'.join([read('README.rst'),
+                                read('CHANGES.rst')])
+
 
 setup(
-    name='django-entangled',
-    version=__version__,
-    description='Edit JSON field using Django Model Form',
-    author='Jacob Rief',
-    author_email='jacob.rief@gmail.com',
-    url='https://github.com/jrief/django-entangled',
-    packages=find_packages(),
-    install_requires=[
-        'django>=2.1',
-    ],
-    license='MIT',
-    platforms=['OS Independent'],
-    keywords=['Django Forms', 'JSON'],
-    classifiers=CLASSIFIERS,
+    name="unittest2pytest",
+    license='GPLv3+',
+    version=version,
+    description="Convert unittest test-cases to pytest",
     long_description=long_description,
-    long_description_content_type='text/markdown',
-    include_package_data=True,
+    author="Hartmut Goebel",
+    author_email="h.goebel@crazy-compilers.com",
+    url="https://github.com/pytest-dev/unittest2pytest",
+    packages=["unittest2pytest", "unittest2pytest.fixes"],
+    entry_points={
+        'console_scripts': [
+            'unittest2pytest = unittest2pytest.__main__:main',
+        ],
+    },
+    classifiers=[
+        "Development Status :: 4 - Beta",
+        "Environment :: Console",
+        "Intended Audience :: Developers",
+        "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+        "Operating System :: OS Independent",
+        "Programming Language :: Python",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3 :: Only",
+        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
+        "Topic :: Software Development",
+        "Topic :: Utilities",
+    ],
+    python_requires=">=3.6",
     zip_safe=False
 )
