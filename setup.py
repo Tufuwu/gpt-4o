@@ -1,75 +1,36 @@
-import codecs
 import os
-import re
+from setuptools import setup, find_packages
 
-from setuptools import Command, setup
-
-BASE_PATH = os.path.abspath(os.path.dirname(__file__))
-
-
-def read(fname):
-    file_path = os.path.join(os.path.dirname(__file__), fname)
-    return codecs.open(file_path, encoding="utf-8").read()
-
-
-def get_version():
-    changes_path = os.path.join(BASE_PATH, "CHANGES.rst")
-    regex = r"^#*\s*(?P<version>[0-9]+\.[0-9]+(\.[0-9]+)?)$"
-    with codecs.open(changes_path, encoding="utf-8") as changes_file:
-        for line in changes_file:
-            res = re.match(regex, line)
-            if res:
-                return res.group("version")
-    return "0.0.0"
-
-
-version = get_version()
-
-
-class VersionCommand(Command):
-    description = "print current library version"
-    user_options = []
-
-    def initialize_options(self):
-        pass
-
-    def finalize_options(self):
-        pass
-
-    def run(self):
-        print(version)
-
+f = open(os.path.join(os.path.dirname(__file__), 'README.rst'))
+readme = f.read()
+f.close()
 
 setup(
-    name="pytest-deadfixtures",
-    version=version,
-    author="João Luiz Lorencetti",
-    author_email="me@dirtycoder.net",
-    maintainer="João Luiz Lorencetti",
-    maintainer_email="me@dirtycoder.net",
-    license="MIT",
-    url="https://github.com/jllorencetti/pytest-deadfixtures",
-    description="A simple plugin to list unused fixtures in pytest",
-    long_description=read("README.rst"),
-    py_modules=["pytest_deadfixtures"],
-    install_requires=["pytest>=3.0.0"],
+    name='micawber',
+    version='0.5.1',
+    description='a small library for extracting rich content from urls',
+    long_description=readme,
+    author='Charles Leifer',
+    author_email='coleifer@gmail.com',
+    url='http://github.com/coleifer/micawber/',
+    packages=[p for p in find_packages() if not p.startswith('examples')],
+    package_data = {
+        'micawber': [
+            'contrib/mcdjango/templates/micawber/*.html',
+        ],
+    },
     classifiers=[
-        "Development Status :: 5 - Production/Stable",
-        "Framework :: Pytest",
-        "Intended Audience :: Developers",
-        "Topic :: Software Development :: Testing",
-        "Programming Language :: Python",
-        "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.7",
-        "Programming Language :: Python :: 3.8",
-        "Programming Language :: Python :: 3.9",
-        "Programming Language :: Python :: 3.10",
-        "Programming Language :: Python :: 3.11",
-        "Programming Language :: Python :: Implementation :: CPython",
-        "Programming Language :: Python :: Implementation :: PyPy",
-        "Operating System :: OS Independent",
-        "License :: OSI Approved :: MIT License",
+        'Development Status :: 4 - Beta',
+        'Environment :: Web Environment',
+        'Intended Audience :: Developers',
+        'License :: OSI Approved :: MIT License',
+        'Operating System :: OS Independent',
+        'Programming Language :: Python',
+        'Programming Language :: Python :: 2.6',
+        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3.2',
+        'Programming Language :: Python :: 3.3',
+        'Framework :: Django',
     ],
-    cmdclass={"version": VersionCommand},
-    entry_points={"pytest11": ["deadfixtures = pytest_deadfixtures"]},
+    test_suite='runtests.runtests',
 )

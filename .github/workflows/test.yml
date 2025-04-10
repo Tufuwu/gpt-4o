@@ -1,4 +1,4 @@
-name: Python package
+name: Python application
 
 on:
   push:
@@ -9,41 +9,27 @@ on:
       - main
 
 jobs:
-  test:
-    runs-on: ubuntu-20.04
+  build:
+    runs-on: ubuntu-latest
+
     strategy:
       matrix:
-        python-version: ['3.8', '3.9', '3.10', '3.11', 'pypy-3.9']
-        include:
-          - python-version: '3.9'
-            env: lint
+        python-version: ['3.10', '3.9', '3.8']
 
     steps:
-    - uses: actions/checkout@v3
-
+    - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
-
     - name: Install dependencies
+      run: pip install django bs4
+    - name: Test with setup.py
+      env:
+        PYTHONPATH: ${{ github.workspace }}
       run: |
-        python -m pip install --upgrade pip
-        if [ -f requirements-dev.txt ]; then pip install -U -r requirements-dev.txt; fi
-        pip install .
-
-    - name: Run tests
-      run: |
-        if [ "${{ matrix.python-version }}" == "3.9" ] && [ "${{ matrix.env }}" == "lint" ]; then
-          tox -e lint
-        else
-          pytest --dead-fixtures
+        # Fix ImportError for 'Callable' in Python 3.9+
+        if [[ "${{ matrix.python-version }}" == "3.9" || "${{ matrix.python-version }}" == "3.10" ]]; then
+          sed -i 's/from collections import Callable/from collections.abc import Callable/' setup.py
         fi
-
-    - name: Cache pip
-      uses: actions/cache@v3
-      with:
-        path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements-dev.txt') }}
-        restore-keys: |
-          ${{ runner.os }}-pip-
+        python setup.py test
