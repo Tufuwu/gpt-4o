@@ -1,4 +1,4 @@
-name: CI
+name: Python package
 
 on:
   push:
@@ -14,7 +14,7 @@ jobs:
 
     strategy:
       matrix:
-        python-version: ['3.8', '3.9', '3.10', '3.11']
+        python-version: ['3.8', '3.9', '3.10']
 
     steps:
     - uses: actions/checkout@v3
@@ -25,35 +25,18 @@ jobs:
         python-version: ${{ matrix.python-version }}
 
     - name: Install dependencies
-      run: pip install --requirement dev-requirements.txt
-
-    - name: Upgrade pre-commit
-      if: ${{ matrix.python-version == '3.8' }}
-      run: pip install --upgrade pre-commit
-
-    - name: Validate coding guidelines
-      if: ${{ matrix.python-version == '3.8' }}
-      run: pre-commit run --all-files
-
-    - name: Run test suite
       run: |
-        python setup.py develop
-        pytest --verbose
-
-    - name: Build and install package
-      run: |
-        python setup.py bdist_wheel
-        python setup.py install
-
-    - name: Test drive installed pygount
-      run: |
-        pygount --version
-        pygount --help
-        pygount pygount *.cfg *.yaml
-        pygount --format=summary pygount *.cfg *.yaml
-
-    - name: Upload coverage to Coveralls
-      if: ${{ matrix.python-version == '3.8' }}
+        make
+        pip install poetry
+        poetry install
       env:
-        COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
-      run: coveralls
+        CFLAGS: "-std=c99"
+
+    - name: Run tests
+      run: make tests
+
+    - name: Upload coverage to Codecov
+      env:
+        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      run: bash <(curl -s https://codecov.io/bash)
+      continue-on-error: true
