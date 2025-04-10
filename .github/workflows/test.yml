@@ -1,22 +1,33 @@
-name: CI
+name: Python package
 
 on:
-  schedule:
-    - cron: '0 0 * * *'
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        python-version: ['3.7', '3.8']
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+    - uses: actions/checkout@v3
 
-    - name: Run script
-      run: |
-        if [[ ${{ github.event_name }} == schedule ]]; then
-          curl -s -X POST \
-            -d "branches=${{ github.ref_name }}" \
-            -d "token=${{ secrets.RTD_TOKEN }}" \
-            https://readthedocs.org/api/v2/webhook/nethserver-devel/49560/
-        fi
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Upgrade setuptools
+      run: pip install --upgrade setuptools
+
+    - name: Install dependencies
+      run: pip install -r requirements.txt
+
+    - name: Test with setup.py
+      run: python setup.py test
