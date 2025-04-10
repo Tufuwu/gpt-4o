@@ -1,43 +1,58 @@
-import pathlib
+"""
+Setup for pygount.
+
+Developer cheat sheet
+---------------------
+
+Tag a release (simply replace ``1.x.x`` with the current version number)::
+
+  $ git tag -a -m "Tagged version 1.x.x" v1.x.x
+  $ git push --tags
+
+Upload release to PyPI::
+
+  $ python3 setup.py bdist_wheel
+  $ twine upload dist/*.whl
+"""
+# Copyright (c) 2016-2020, Thomas Aglassinger.
+# All rights reserved. Distributed under the BSD License.
+import os
 from setuptools import setup, find_packages
 
+from pygount import __version__
+
+
+# Read the long description from the README file.
+_setup_folder = os.path.dirname(__file__)
+with open(os.path.join(_setup_folder, "README.md"), encoding="utf-8") as readme_file:
+    long_description = readme_file.read()
+
 setup(
-    name='graphviz',
-    version='0.17.1.dev0',
-    author='Sebastian Bank',
-    author_email='sebastian.bank@uni-leipzig.de',
-    description='Simple Python interface for Graphviz',
-    keywords='graph visualization dot render',
-    license='MIT',
-    url='https://github.com/xflr6/graphviz',
-    project_urls={
-        'Documentation': 'https://graphviz.readthedocs.io',
-        'Changelog': 'https://graphviz.readthedocs.io/en/latest/changelog.html',
-        'Issue Tracker': 'https://github.com/xflr6/graphviz/issues',
-        'CI': 'https://github.com/xflr6/graphviz/actions',
-        'Coverage': 'https://codecov.io/gh/xflr6/graphviz',
-    },
-    packages=find_packages(),
-    platforms='any',
-    python_requires='>=3.6',
-    extras_require={
-        'dev': ['tox>=3', 'flake8', 'pep8-naming', 'wheel', 'twine'],
-        'test': ['mock>=3', 'pytest>=5.2', 'pytest-mock>=2', 'pytest-cov'],
-        'docs': ['sphinx>=1.8', 'sphinx-autodoc-typehints', 'sphinx-rtd-theme'],
-    },
-    long_description=pathlib.Path('README.rst').read_text(encoding='utf-8'),
+    name="pygount",
+    version=__version__,
+    description="count source lines of code (SLOC) using pygments",
+    long_description=long_description,
+    url="https://github.com/roskakori/pygount",
+    author="Thomas Aglassinger",
+    author_email="roskakori@users.sourceforge.net",
+    license="BSD",
     classifiers=[
-        'Development Status :: 4 - Beta',
-        'Intended Audience :: Developers',
-        'Intended Audience :: Science/Research',
-        'License :: OSI Approved :: MIT License',
-        'Operating System :: OS Independent',
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7',
-        'Programming Language :: Python :: 3.8',
-        'Programming Language :: Python :: 3.9',
-        'Programming Language :: Python :: 3.10',
-        'Topic :: Scientific/Engineering :: Visualization',
+        "Development Status :: 5 - Production/Stable",
+        "Environment :: Console",
+        "Intended Audience :: Developers",
+        "License :: OSI Approved :: BSD License",
+        "Natural Language :: English",
+        "Operating System :: OS Independent",
+        "Programming Language :: Python :: 3 :: Only",
+        "Programming Language :: Python :: 3.5",
+        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
+        "Topic :: Software Development",
     ],
+    keywords=["code analysis", "count", "SLOC"],
+    packages=find_packages(exclude=["tests"]),
+    install_requires=["pygments>=2.0"],
+    python_requires=">=3.5",
+    entry_points={"console_scripts": ["pygount=pygount.command:main"]},
 )
