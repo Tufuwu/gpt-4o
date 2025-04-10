@@ -1,11 +1,16 @@
-*.pyc
-*.swp
-.coverage
-.vagrant
-bashlex/parser.out
-bashlex/parsetab.py
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
 
+# Distribution / packaging
 build/
 dist/
-bashlex.egg-info/
-*env*/
+*.egg-info/
+.eggs/
+
+# Dev tools
+.idea
+
+# Environments
+/.venv
