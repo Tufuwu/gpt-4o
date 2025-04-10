@@ -1,100 +1,105 @@
-aioapns - An efficient APNs Client Library for Python/asyncio
-=================================================================================
+|gh-test| |rtd| |pypi|
 
-.. image:: https://travis-ci.org/Fatal1ty/aioapns.svg?branch=master
-    :target: https://travis-ci.org/Fatal1ty/aioapns
+.. |gh-test| image:: https://github.com/RKrahl/pytest-dependency/actions/workflows/run-tests.yaml/badge.svg
+   :target: https://github.com/RKrahl/pytest-dependency/actions/workflows/run-tests.yaml
+   :alt: GitHub Workflow Status
+	 
+.. |rtd| image:: https://img.shields.io/readthedocs/pytest-dependency/latest
+   :target: https://pytest-dependency.readthedocs.io/en/latest/
+   :alt: Documentation build status
 
-.. image:: https://github.com/Fatal1ty/aioapns/workflows/tests/badge.svg
-   :target: https://github.com/Fatal1ty/aioapns/actions
+.. |pypi| image:: https://img.shields.io/pypi/v/pytest-dependency
+   :target: https://pypi.org/project/pytest-dependency/
+   :alt: PyPI version
 
-.. image:: https://requires.io/github/Fatal1ty/aioapns/requirements.svg?branch=master
-     :target: https://requires.io/github/Fatal1ty/aioapns/requirements/?branch=master
-     :alt: Requirements Status
+pytest-dependency – Manage dependencies of tests
+================================================
 
-.. image:: https://img.shields.io/pypi/v/aioapns.svg
-    :target: https://pypi.python.org/pypi/aioapns
-
-.. image:: https://img.shields.io/pypi/pyversions/aioapns.svg
-    :target: https://pypi.python.org/pypi/aioapns/
-
-.. image:: https://img.shields.io/badge/License-Apache%202.0-blue.svg
-    :target: https://opensource.org/licenses/Apache-2.0
-
-**aioapns** is a library designed specifically for sending push-notifications to iOS devices
-via Apple Push Notification Service. aioapns provides an efficient client through
-asynchronous HTTP2 protocol for use with Python's ``asyncio``
-framework.
-
-aioapns requires Python 3.5 or later.
+This pytest plugin manages dependencies of tests.  It allows to mark
+some tests as dependent from other tests.  These tests will then be
+skipped if any of the dependencies did fail or has been skipped.
 
 
-Performance
------------
-
-In my testing aioapns allows you to send on average 1.3k notifications per second on a single core.
-
-
-Features
+Download
 --------
 
-* Internal connection pool which adapts to the current load
-* Support for certificate and token based connections
-* Ability to set TTL (time to live) for notifications
-* Ability to set priority for notifications
-* Ability to set collapse-key for notifications
-* Ability to use production or development APNs server
+The latest release version can be found `at PyPI`__.
+
+.. __: `PyPI site`_
+
+
+System requirements
+-------------------
+
++ Python 2.7 or 3.4 and newer.
++ `setuptools`_.
++ `pytest`_ 3.7.0 or newer.
+
+Optional library packages:
+
++ `setuptools_scm`_
+
+  The version number is managed using this package.  All source
+  distributions add a static text file with the version number and
+  fall back using that if `setuptools_scm` is not available.  So this
+  package is only needed to build out of the plain development source
+  tree as cloned from GitHub.
 
 
 Installation
 ------------
 
-Use pip to install::
+1. Download the sources, unpack, and change into the source directory.
 
-    $ pip install aioapns
+2. Build (optional)::
 
+     $ python setup.py build
 
-Basic Usage
------------
+3. Test (optional)::
 
-.. code-block:: python
+     $ PYTHONPATH=build/lib python -m pytest tests
 
-    import asyncio
-    from uuid import uuid4
-    from aioapns import APNs, NotificationRequest, PushType
+4. Install::
 
+     $ python setup.py install
 
-    async def run():
-        apns_cert_client = APNs(
-            client_cert='/path/to/apns-cert.pem',
-            use_sandbox=False,
-        )
-        apns_key_client = APNs(
-            key='/path/to/apns-key.p8',
-            key_id='<KEY_ID>',
-            team_id='<TEAM_ID>',
-            topic='<APNS_TOPIC>',  # Bundle ID
-            use_sandbox=False,
-        )
-        request = NotificationRequest(
-            device_token='<DEVICE_TOKEN>',
-            message = {
-                "aps": {
-                    "alert": "Hello from APNs",
-                    "badge": "1",
-                }
-            },
-            notification_id=str(uuid4()),  # optional
-            time_to_live=3,                # optional
-            push_type=PushType.ALERT,      # optional
-        )
-        await apns_cert_client.send_notification(request)
-        await apns_key_client.send_notification(request)
-
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(run())
+The last step might require admin privileges in order to write into
+the site-packages directory of your Python installation.
 
 
-License
--------
+Documentation
+-------------
 
-aioapns is developed and distributed under the Apache 2.0 license.
+See the `online documentation`__.
+
+The example test modules used in the documentation can be found in
+doc/examples in the source distribution.
+
+.. __: `Read the Docs site`_
+
+
+Copyright and License
+---------------------
+
+- Copyright 2013–2015
+  Helmholtz-Zentrum Berlin für Materialien und Energie GmbH
+- Copyright 2016–2020 Rolf Krahl
+
+Licensed under the Apache License, Version 2.0 (the "License"); you
+may not use this file except in compliance with the License.  You may
+obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+implied.  See the License for the specific language governing
+permissions and limitations under the License.
+
+
+.. _PyPI site: https://pypi.org/project/pytest-dependency/
+.. _setuptools: http://pypi.python.org/pypi/setuptools/
+.. _pytest: http://pytest.org/
+.. _setuptools_scm: https://github.com/pypa/setuptools_scm/
+.. _Read the Docs site: https://pytest-dependency.readthedocs.io/
