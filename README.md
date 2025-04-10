@@ -1,59 +1,48 @@
-NFO Viewer
-==========
+Python Asserts
+==============
 
-[![Test](https://github.com/otsaloma/nfoview/workflows/Test/badge.svg)](https://github.com/otsaloma/nfoview/actions)
-[![Packages](https://repology.org/badge/tiny-repos/nfoview.svg)](https://repology.org/metapackage/nfoview)
-[![Flathub](https://img.shields.io/badge/download-flathub-blue.svg)](https://flathub.org/apps/details/io.otsaloma.nfoview)
-[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/otsaloma/nfoview)
+[![License](https://img.shields.io/pypi/l/asserts.svg)](https://pypi.python.org/pypi/asserts/)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/asserts)](https://pypi.python.org/pypi/asserts/)
+[![GitHub](https://img.shields.io/github/release/srittau/python-asserts/all.svg)](https://github.com/srittau/python-asserts/releases/)
+[![pypi](https://img.shields.io/pypi/v/asserts.svg)](https://pypi.python.org/pypi/asserts/)
+[![Travis CI](https://travis-ci.org/srittau/python-asserts.svg?branch=master)](https://travis-ci.org/srittau/python-asserts)
 
-NFO Viewer is a simple viewer for NFO files, which are "ASCII" art in
-the CP437 codepage. The advantages of using NFO Viewer instead of a text
-editor are preset font and encoding settings, automatic window size and
-clickable hyperlinks.
+Stand-alone Assertions for Python
 
-## Installing
+This package provides a few advantages over the assertions provided by
+unittest.TestCase:
 
-### Linux
+* Can be used stand-alone, for example:
+    * In test cases, not derived from TestCase.
+    * In fake and mock classes.
+    * In implementations as rich alternative to the assert statement.
+* PEP 8 compliance.
+* Custom stand-alone assertions can be written easily.
+* Arguably a better separation of concerns, since TestCase is responsible
+  for test running only, if assertion functions are used exclusively.
 
-#### Packages
+There are a few regressions compared to assertions from TestCase:
 
-NFO Viewer is packaged for most of the popular [distros][], so easiest
-is to install via your distro's package management. If not packaged for
-your distro or you need a newer version than packaged, read below on how
-to install from Flatpak or the source code.
+* The default assertion class (`AssertionError`) can not be overwritten. This
+  is rarely a problem in practice.
+* asserts does not support the `addTypeEqualityFunc()` functionality.
 
-[distros]: https://repology.org/metapackage/nfoview
+Usage:
 
-#### Flatpak
+```python
+>>> from asserts import assert_true, assert_equal, assert_raises
+>>> my_var = 13
+>>> assert_equal(13, my_var)
+>>> assert_true(True, msg="custom failure message")
+>>> with assert_raises(KeyError):
+...     raise KeyError()
+```
 
-Stable releases are available via [Flathub][].
+Failure messages can be customized:
 
-The development version can be installed by running command `make
-install` under the `flatpak` directory. You need make, flatpak-builder
-and gettext to build the Flatpak.
-
-[Flathub]: https://flathub.org/apps/details/io.otsaloma.nfoview
-
-#### Source
-
-NFO Viewer requires Python ≥ 3.2, PyGObject ≥ 3.0.0 and GTK ≥ 3.12. You
-also need a font that supports the kinds of glyphs commonly used in NFO
-files: Cascadia Code is a good choice and used by NFO Viewer by default,
-if available. During installation you will also need gettext. On
-Debian/Ubuntu you can install these with the following command.
-
-    sudo apt install fonts-cascadia-code \
-                     gettext \
-                     gir1.2-gtk-3.0 \
-                     python3 \
-                     python3-gi
-
-Then, to install NFO Viewer, run command
-
-    sudo python3 setup.py install --prefix=/usr/local
-
-### Windows
-
-Windows installers are built irregularly, see [releases][].
-
-[releases]: https://github.com/otsaloma/nfoview/releases
+```python
+>>> assert_equal(13, 14, msg_fmt="{got} is wrong, expected {expected}")
+Traceback (most recent call last):
+  ...
+AssertionError: 14 is wrong, expected 13
+```
