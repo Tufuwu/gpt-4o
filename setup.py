@@ -1,42 +1,71 @@
+#!/usr/bin/env python
+# Generic setup script for single-package Python projects
+# by Thomas Perl <thp.io/about>
+
+from distutils.core import setup
+
+import re
 import os
+import glob
 
-from setuptools import setup
+PACKAGE = 'mygpoclient'
+SCRIPT_FILE = os.path.join(PACKAGE, '__init__.py')
 
-this_directory = os.path.dirname(__file__)
-module_path = os.path.join(this_directory, 'flask_bcrypt.py')
-version_line = [line for line in open(module_path)
-                if line.startswith('__version_info__')][0]
-with open(os.path.join(this_directory, 'README.markdown')) as f:
-    long_description = f.read()
+main_py = open(SCRIPT_FILE).read()
+metadata = dict(re.findall("__([a-z]+)__ = '([^']+)'", main_py))
+docstrings = re.findall('"""(.*?)"""', main_py, re.DOTALL)
 
-__version__ = '.'.join(eval(version_line.split('__version_info__ = ')[-1]))
-
-setup(
-    name='Flask-Bcrypt',
-    version=__version__,
-    url='https://github.com/maxcountryman/flask-bcrypt',
-    license='BSD',
-    author='Max Countryman',
-    author_email='maxc@me.com',
-    description='Brcrypt hashing for Flask.',
-    long_description=long_description,
-    long_description_content_type='text/markdown',
-    py_modules=['flask_bcrypt'],
-    zip_safe=False,
-    platforms='any',
-    install_requires=['Flask', 'bcrypt>=3.1.1'],
-    classifiers=[
-        'Environment :: Web Environment',
-        'Intended Audience :: Developers',
-        'License :: OSI Approved :: BSD License',
-        'Operating System :: OS Independent',
-        'Programming Language :: Python',
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.7',
-        'Programming Language :: Python :: 3.8',
-        'Programming Language :: Python :: 3.9',
-        'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
-        'Topic :: Software Development :: Libraries :: Python Modules'
-    ],
-    test_suite='test_bcrypt'
+# List the packages that need to be installed/packaged
+PACKAGES = (
+        PACKAGE,
 )
+
+SCRIPTS = glob.glob('bin/*')
+
+# Metadata fields extracted from SCRIPT_FILE
+AUTHOR_EMAIL = metadata['author']
+VERSION = metadata['version']
+WEBSITE = metadata['website']
+LICENSE = metadata['license']
+DESCRIPTION = docstrings[0].strip()
+if '\n\n' in DESCRIPTION:
+    DESCRIPTION, LONG_DESCRIPTION = DESCRIPTION.split('\n\n', 1)
+else:
+    LONG_DESCRIPTION = None
+
+# Extract name and e-mail ("Firstname Lastname <mail@example.org>")
+AUTHOR, EMAIL = re.match(r'(.*) <(.*)>', AUTHOR_EMAIL).groups()
+
+DATA_FILES = [
+    ('share/man/man1', glob.glob('man/*')),
+]
+
+CLASSIFIERS = [
+    'Development Status :: 5 - Production/Stable',
+    'Intended Audience :: Developers',
+    'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
+    'Operating System :: OS Independent',
+    'Programming Language :: Python',
+    'Programming Language :: Python :: 2',
+    'Programming Language :: Python :: 2.6',
+    'Programming Language :: Python :: 2.7',
+    'Programming Language :: Python :: 3',
+    'Programming Language :: Python :: 3.3',
+    'Programming Language :: Python :: 3.4',
+]
+
+setup(name=PACKAGE,
+      version=VERSION,
+      description=DESCRIPTION,
+      long_description=LONG_DESCRIPTION,
+      author=AUTHOR,
+      author_email=EMAIL,
+      license=LICENSE,
+      url=WEBSITE,
+      packages=PACKAGES,
+      scripts=SCRIPTS,
+      data_files=DATA_FILES,
+      download_url=WEBSITE+PACKAGE+'-'+VERSION+'.tar.gz',
+      classifiers=CLASSIFIERS,
+    )
+
