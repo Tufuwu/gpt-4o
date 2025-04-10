@@ -1,3 +1,4 @@
+### Python template
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -20,7 +21,6 @@ lib64/
 parts/
 sdist/
 var/
-wheels/
 *.egg-info/
 .installed.cfg
 *.egg
@@ -43,7 +43,7 @@ htmlcov/
 .cache
 nosetests.xml
 coverage.xml
-*.cover
+*,cover
 .hypothesis/
 
 # Translations
@@ -54,9 +54,8 @@ coverage.xml
 *.log
 local_settings.py
 
-# Flask stuff:
+# Flask instance folder
 instance/
-.webassets-cache
 
 # Scrapy stuff:
 .scrapy
@@ -67,7 +66,7 @@ docs/_build/
 # PyBuilder
 target/
 
-# Jupyter Notebook
+# IPython Notebook
 .ipynb_checkpoints
 
 # pyenv
@@ -76,30 +75,32 @@ target/
 # celery beat schedule file
 celerybeat-schedule
 
-# SageMath parsed files
-*.sage.py
-
 # dotenv
 .env
-.envrc
 
 # virtualenv
-.venv
 venv/
 ENV/
-py27/
 
 # Spyder project settings
 .spyderproject
-.spyproject
 
 # Rope project settings
 .ropeproject
+### Mercurial template
+.hg/
+.hgignore
+.hgsigs
+.hgsub
+.hgsubstate
+.hgtags
+### Example user template template
+### Example user template
 
-# mkdocs documentation
-/site
-
-# mypy
-.mypy_cache/
-
-example/users.json
+# IntelliJ project files
+.idea
+*.iml
+out
+gen
+# Created by .ignore support plugin (hsz.mobi)
+/temp_tests/
