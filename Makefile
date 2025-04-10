@@ -1,29 +1,45 @@
-.PHONY: all venv install-deps freeze lint test coverage wheel upload
+# gpodder.net API Client
+# Copyright (C) 2009-2013 Thomas Perl and the gPodder Team
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-all: lint coverage
+PACKAGE := mygpoclient
 
-venv:
-	sudo apt-get -y install python3-virtualenv
-	virtualenv -p python3 venv
+PYTHON ?= python
+FIND ?= find
+PYTEST ?= $(PYTHON) -m pytest
 
-install-deps:
-	pip install -r requirements-dev.lock
-
-freeze:
-	@pip freeze | grep -v '^pkg-resources='
-
-lint:
-	python -m flake8 soft_webauthn.py tests
-	python -m pylint --ignore=example_server.py soft_webauthn.py tests
+help:
+	@echo ""
+	@echo "$(MAKE) test ......... Run unit tests"
+	@echo "$(MAKE) clean ........ Clean build directory"
+	@echo "$(MAKE) distclean .... $(MAKE) clean + remove 'dist/'"
+	@echo ""
 
 test:
-	python -m pytest -v
+	$(PYTEST)
 
-coverage:
-	coverage run --source soft_webauthn -m pytest tests -x -vv
-	coverage report --show-missing --fail-under 100
+docs:
+	epydoc -n 'gpodder.net API Client Library' -o docs/ mygpoclient -v --exclude='.*_test'
 
-wheel:
-	python setup.py sdist bdist_wheel
-upload:
-	twine upload dist/*
+clean:
+	$(FIND) . -name '*.pyc' -o -name __pycache__ -exec $(RM) -r '{}' +
+	$(RM) -r build
+	$(RM) .coverage MANIFEST
+
+distclean: clean
+	$(RM) -r dist
+
+.PHONY: help test docs clean distclean
+.DEFAULT: help
