@@ -1,2 +1,2 @@
-flask
-peewee>=2.7.3
+m2r
+sphinx-rtd-theme

@@ -1,8 +1,13 @@
 include CHANGELOG.md
-include LICENSE
+include LICENSE.md
 include README.md
-include runtests.py
-include scout_client.py
-include tests.py
-recursive-include docker/*
-recursive-include docs/*
+
+recursive-exclude * __pycache__
+recursive-exclude * *.py[co]
+
+recursive-include docs *.rst conf.py Makefile requirements.txt
+recursive-include examples *.md *.txt *.py
+recursive-include tests *.py
+
+include simple_pid/*.pyi
+include simple_pid/py.typed

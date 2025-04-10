@@ -1,101 +1,126 @@
-![](http://media.charlesleifer.com/blog/photos/scout-logo.png)
+# simple-pid
 
-[scout](https://scout.readthedocs.io/en/latest/) is a RESTful search server
-written in Python. The search is powered by [SQLite's full-text search extension](http://sqlite.org/fts3.html),
-and the web application utilizes the [Flask](http://flask.pocoo.org) framework.
+[![Tests](https://github.com/m-lundberg/simple-pid/actions/workflows/run-tests.yml/badge.svg)](https://github.com/m-lundberg/simple-pid/actions?query=workflow%3Atests)
+[![PyPI](https://img.shields.io/pypi/v/simple-pid.svg)](https://pypi.org/project/simple-pid/)
+[![Read the Docs](https://img.shields.io/readthedocs/simple-pid.svg)](https://simple-pid.readthedocs.io/)
+[![License](https://img.shields.io/github/license/m-lundberg/simple-pid.svg)](https://github.com/m-lundberg/simple-pid/blob/master/LICENSE.md)
+[![Downloads](https://pepy.tech/badge/simple-pid)](https://pepy.tech/project/simple-pid)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
-Scout aims to be a lightweight, RESTful search server in the spirit of
-[ElasticSearch](https://www.elastic.co), powered by the SQLite full-text search
-extension. In addition to search, Scout can be used as a document database,
-supporting complex filtering operations. Arbitrary files can be attached to
-documents and downloaded through the REST API.
+A simple and easy to use PID controller in Python. If you want a PID controller without external dependencies that just works, this is for you! The PID was designed to be robust with help from [Brett Beauregards guide](http://brettbeauregard.com/blog/2011/04/improving-the-beginners-pid-introduction/).
 
-Scout is simple to use, simple to deploy and *just works*.
+Usage is very simple:
 
-Features:
+```python
+from simple_pid import PID
+pid = PID(1, 0.1, 0.05, setpoint=1)
 
-* Multiple search indexes present in a single database.
-* RESTful design for easy indexing and searching.
-* Simple key-based authentication (optional).
-* Lightweight, low resource utilization, minimal setup required.
-* Store search content and arbitrary metadata.
-* Multiple result ranking algorithms, porter stemmer.
-* Besides full-text search, perform complex filtering based on metadata values.
-* Comprehensive unit-tests.
-* Supports SQLite [FTS4](http://sqlite.org/fts3.html).
-* [Documentation hosted on ReadTheDocs](https://scout.readthedocs.io/en/latest/).
+# Assume we have a system we want to control in controlled_system
+v = controlled_system.update(0)
 
-![](https://api.travis-ci.org/coleifer/scout.svg?branch=master)
+while True:
+    # Compute new output from the PID according to the systems current value
+    control = pid(v)
+    
+    # Feed the PID output to the system and get its current value
+    v = controlled_system.update(control)
+```
+
+Complete API documentation can be found [here](https://simple-pid.readthedocs.io/en/latest/simple_pid.html#module-simple_pid.PID).
 
 ## Installation
-
-Scout can be installed from PyPI using `pip` or from source using `git`. Should
-you install from PyPI you will run the latest version, whereas installing from
-`git` ensures you have the latest changes.
-
-Alternatively, you can run `scout` using [docker](https://www.docker.com/) and
-the provided [Dockerfile](https://github.com/coleifer/scout/blob/master/docker/Dockerfile).
-
-Installation using pip:
-
-```console
-$ pip install scout
+To install, run:
+```
+pip install simple-pid
 ```
 
-You can also install the latest `master` branch using pip:
-
-```console
-$ pip install -e git+https://github.com/coleifer/scout.git#egg=scout
+## Usage
+The `PID` class implements `__call__()`, which means that to compute a new output value, you simply call the object like this:
+```python
+output = pid(current_value)
 ```
 
-If you wish to install from source, first clone the code and run `setup.py install`:
+### The basics
+The PID works best when it is updated at regular intervals. To achieve this, set `sample_time` to the amount of time there should be between each update and then call the PID every time in the program loop. A new output will only be calculated when `sample_time` seconds has passed:
+```python
+pid.sample_time = 0.01  # Update every 0.01 seconds
 
-```console
-$ git clone https://github.com/coleifer/scout.git
-$ cd scout/
-$ python setup.py install
+while True:
+    output = pid(current_value)
 ```
 
-Using either of the above methods will also ensure the project's Python
-dependencies are installed: [flask](http://flask.pocoo.org) and
-[peewee](http://docs.peewee-orm.com).
-
-[Check out the documentation](https://scout.readthedocs.io/en/latest/) for more information about the project.
-
-## Running scout
-
-If you installed using `pip`, you should be able to simply run:
-
-```console
-$ scout /path/to/search-index.db
+To set the setpoint, ie. the value that the PID is trying to achieve, simply set it like this:
+```python
+pid.setpoint = 10
 ```
 
-If you've just got a copy of the source code, you can run:
-
-```console
-$ python scout/ /path/to/search-index.db
+The tunings can be changed any time when the PID is running. They can either be set individually or all at once:
+```python
+pid.Ki = 1.0
+pid.tunings = (1.0, 0.2, 0.4)
 ```
 
-## Docker
+To use the PID in [reverse mode](http://brettbeauregard.com/blog/2011/04/improving-the-beginners-pid-direction/), meaning that an increase in the input leads to a decrease in the output (like when cooling for example), you can set the tunings to negative values:
 
-To run scout using docker, you can use the provided Dockerfile or simply pull
-the `coleifer/scout` image from dockerhub:
-
-```console
-
-$ docker run -it --rm -p 9004:9004 coleifer/scout
-# scout is now running on 0.0.0.0:9004
+```python
+pid.tunings = (-1.0, -0.1, 0)
 ```
 
-Build your own image locally and run it:
+Note that all the tunings should have the same sign.
 
-```console
-
-$ cd scout/docker
-$ docker build -t scout .
-$ docker run -d \
-    --name my-scout-server \
-    -p 9004:9004 \
-    -v scout-data:/data \
-    scout
+In order to get output values in a certain range, and also to avoid [integral windup](https://en.wikipedia.org/wiki/Integral_windup) (since the integral term will never be allowed to grow outside of these limits), the output can be limited to a range:
+```python
+pid.output_limits = (0, 10)    # Output value will be between 0 and 10
+pid.output_limits = (0, None)  # Output will always be above 0, but with no upper bound
 ```
+
+### Other features
+#### Auto mode
+To disable the PID so that no new values are computed, set auto mode to False:
+```python
+pid.auto_mode = False  # No new values will be computed when pid is called
+pid.auto_mode = True   # pid is enabled again
+```
+When disabling the PID and controlling a system manually, it might be useful to tell the PID controller where to start from when giving back control to it. This can be done by enabling auto mode like this:
+```python
+pid.set_auto_mode(True, last_output=8.0)
+```
+This will set the I-term to the value given to `last_output`, meaning that if the system that is being controlled was stable at that output value the PID will keep the system stable if started from that point, without any big bumps in the output when turning the PID back on.
+
+#### Observing separate components
+When tuning the PID, it can be useful to see how each of the components contribute to the output. They can be seen like this:
+```python
+p, i, d = pid.components  # The separate terms are now in p, i, d
+```
+
+#### Proportional on measurement
+To eliminate overshoot in certain types of systems, you can calculate the [proportional term directly on the measurement](http://brettbeauregard.com/blog/2017/06/introducing-proportional-on-measurement/) instead of the error. This can be enabled like this:
+```python
+pid.proportional_on_measurement = True
+```
+
+#### Error mapping
+To transform the error value to another domain before doing any computations on it, you can supply an `error_map` callback function to the PID. The callback function should take one argument which is the error from the setpoint. This can be used e.g. to get a degree value error in a yaw angle control with values between [-pi, pi):
+```python
+import math
+
+def pi_clip(angle):
+    if angle > 0:
+        if angle > math.pi:
+            return angle - 2*math.pi
+    else:
+        if angle < -math.pi:
+            return angle + 2*math.pi
+    return angle
+
+pid.error_map = pi_clip
+```
+
+## Tests
+Use the following to run tests:
+```
+tox
+```
+
+## License
+Licensed under the [MIT License](https://github.com/m-lundberg/simple-pid/blob/master/LICENSE.md).
