@@ -1,7 +1,9 @@
-/doc/_build
-__pycache__
+.*.swp
 *.pyc
-docs/
-*~
-*#
-/.coverage
+venv/
+
+.coverage
+*.egg-info
+.pytest_cache
+dist/
+htmlcov/
