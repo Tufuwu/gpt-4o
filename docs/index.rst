@@ -1,80 +1,33 @@
-Simple Login Extension for Flask
-================================
+FinTS client library
+====================
 
-The simplest way to add login to Flask!
+.. image:: https://img.shields.io/pypi/v/fints.svg
+   :target: https://pypi.python.org/pypi/fints
 
-So why Flask Simple Login?
-==========================
+This is a pure-python implementation of FinTS (formerly known as HBCI), a
+online-banking protocol commonly supported by German banks.
 
-Sometimes you need something simple for that small project or for prototyping.
-
-Flask Simple Login
-==================
-
-What it provides:
-
-   * Login and Logout forms and pages
-   * Function to check if user is logged-in
-   * Decorator for views
-   * Easy and customizable ``login_checker``
-   * Basic auth for API endpoints
-
-What it does not provide:
-
-   * Database Integration
-   * Password management
-   * API authentication with Token or JWT
-   * Role or user based access control
-
-Of course you can easily implement all above by your own. Take a look at `example`_.
-
-   .. _example: https://github.com/flask-extensions/flask_simplelogin/tree/main/example
-
-Install
-=======
-
-First install it from `PyPI`_:
-
-    .. _PyPI: https://pypi.org/project/flask_simplelogin/
-
-::
-
-    pip install flask_simplelogin
-
-
-Flask Simple Login depends on Flask-WTF and WTForms, as well as on a `SECRET_KEY` set in your `app.config`.
-
-Quick start
-===========
-
-::
-
-    from flask import Flask
-    from flask_simplelogin import SimpleLogin
-
-    app = Flask(__name__)
-    SimpleLogin(app)
-
-**That's it!**
-
-Now you have ``/login`` and ``/logout`` routes in your application.
-
-The user name defaults to ``admin`` and the password defaults to ``secret`` — yeah that's not clever, let's see how to change it!
-
+Library user documentation content
+----------------------------------
 
 .. toctree::
    :maxdepth: 2
-   :caption: Index:
 
-   configuring.md
-   usage.md
-   customizing.md
-   extras.md
+   quickstart
+   reading
+   client
+   tans
+   transfers
+   debits
+   tested
+   upgrading_2_3
+   upgrading_1_2
+   trouble
 
 
-References:
-===========
+Library developer documentation content
+---------------------------------------
+.. toctree::
+   :maxdepth: 2
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+   developer/index

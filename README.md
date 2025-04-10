@@ -1,40 +1,36 @@
-[![GitHub Actions](https://github.com/flask-extensions/flask_simplelogin/workflows/Tests/badge.svg)](https://github.com/flask-extensions/flask_simplelogin/actions/workflows/tests.yml)
-[![PyPI](https://img.shields.io/pypi/v/flask_simplelogin.svg?style=flat-square)](https://pypi.org/project/flask_simplelogin/)
-[![PyPI versions](https://img.shields.io/pypi/pyversions/flask_simplelogin.svg?style=flat-square)](https://pypi.org/project/flask_simplelogin/)
-[![PyPI formats](https://img.shields.io/pypi/format/flask_simplelogin.svg?style=flat-square)](https://pypi.org/project/flask_simplelogin/)
-[![Flask](https://img.shields.io/badge/Flask-Extension-blue.svg?style=flat-square)](https://github.com/pallets/flask)
-[![Documentation](https://readthedocs.org/projects/flask-simple-login/badge/?version=latest)](https://flask-simple-login.readthedocs.io/en/latest/?badge=latest)
+PyFinTS
+=======
 
-# Login Extension for Flask
+This is a pure-python implementation of FinTS (formerly known as HBCI), a
+online-banking protocol commonly supported by German banks.
 
-The simplest way to add login to flask!
 
-## Top Contributors
+[Read our documentation for more info](https://python-fints.readthedocs.io)
 
-[![](https://sourcerer.io/fame/cuducos/cuducos/flask_simplelogin/images/0)](https://sourcerer.io/fame/cuducos/cuducos/flask_simplelogin/links/0)[![](https://sourcerer.io/fame/cuducos/cuducos/flask_simplelogin/images/1)](https://sourcerer.io/fame/cuducos/cuducos/flask_simplelogin/links/1)[![](https://sourcerer.io/fame/cuducos/cuducos/flask_simplelogin/images/2)](https://sourcerer.io/fame/cuducos/cuducos/flask_simplelogin/links/2)[![](https://sourcerer.io/fame/cuducos/cuducos/flask_simplelogin/images/3)](https://sourcerer.io/fame/cuducos/cuducos/flask_simplelogin/links/3)[![](https://sourcerer.io/fame/cuducos/cuducos/flask_simplelogin/images/4)](https://sourcerer.io/fame/cuducos/cuducos/flask_simplelogin/links/4)[![](https://sourcerer.io/fame/cuducos/cuducos/flask_simplelogin/images/5)](https://sourcerer.io/fame/cuducos/cuducos/flask_simplelogin/links/5)[![](https://sourcerer.io/fame/cuducos/cuducos/flask_simplelogin/images/6)](https://sourcerer.io/fame/cuducos/cuducos/flask_simplelogin/links/6)[![](https://sourcerer.io/fame/cuducos/cuducos/flask_simplelogin/images/7)](https://sourcerer.io/fame/cuducos/cuducos/flask_simplelogin/links/7)
+Maintenance Status 
+------------------
 
-Add yourself, send a PR!
+This project is maintained, but with limited capacity. Working on this is takes a lot of time and testing since all banks do things differently and once you move a part here, you break an unexpected one over there. Therefore: Bugs will only be fixed by me if they occur with a bank where I have an account. New features will only be developed if I need them. PRs will be merged if they either have a very low risk of breaking things elsewhere (e.g. purely adding new commands) or if I can test them. In any case, things might take a little time until I have the bandwidth to focus on them. Sorry about that :( 
 
-## How it works
+Limitations
+-----------
 
-First install it from [PyPI](https://pypi.org/project/flask_simplelogin/).
+* Only FinTS 3.0 is supported
+* Only PIN/TAN authentication is supported, no signature cards
+* Only the following operations are supported:
+  * Fetching bank statements
+  * Fetching balances
+  * Fetching holdings
+  * SEPA transfers and debits (only with required TAN and with specific TAN methods)
+* Supports Python 3.6+
 
-> `pip install flask_simplelogin`
+Credits and License
+-------------------
 
-```python
-from flask import Flask
-from flask_simplelogin import SimpleLogin
+This library is maintained by Raphael Michel <mail@raphaelmichel.de>
+and features major contributions by Henryk Plötz.
 
-app = Flask(__name__)
-SimpleLogin(app)
-```
+Further thanks for improving this library go out to:
+Daniel Nowak, Patrick Braune, Mathias Dalheimer, Christopher Grebs, Markus Schindler, and many more.
 
-## **That's it!**
-
-Now you have `/login` and `/logout` routes in your application.
-
-The username defaults to `admin` and the password defaults to `secret` (yeah that's not clever, let's see how to change it)
-
-![Login Screen](/login_screen.png)
-
-Check the [documentation](https://flask-simple-login.readthedocs.io/en/latest/?badge=latest) for more details!
+License: LGPL
