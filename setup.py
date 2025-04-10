@@ -1,45 +1,28 @@
-from distutils.core import setup
+import setuptools
 
-with open('requirements.txt') as f:
-    required = f.read().splitlines()
+from tinytuya import __version__
 
-setup(
-    name='moira-client',
-    version='2.4',
-    description='Client for Moira - Alerting system based on Graphite data',
-    keywords='moira monitoring client metrics alerting',
-    long_description="""
-        Moira is a real-time alerting tool, based on Graphite data.
-        moira-client is a python client for Moira API.
-        Key features:
-        - create, update, delete, manage triggers
-        - create, delete, update subscriptions
-        - manage tags, patterns, notifications, events, contacts
-    """,
-    author = 'Alexander Lukyanchenko',
-    author_email = 'al.lukyanchenko@gmail.com',
-    packages=[
-        'moira_client',
-        'moira_client.models'
+with open("README.md", "r") as fh:
+    long_description = fh.read()
+
+setuptools.setup(
+    name="tinytuya",
+    version=__version__,
+    author="Jason Cox",
+    author_email="jason@jasonacox.com",
+    description="Python module to interface with Tuya WiFi smart devices",
+    long_description=long_description,
+    long_description_content_type="text/markdown",
+    url='https://github.com/jasonacox/tinytuya',
+    packages=setuptools.find_packages(),
+    install_requires=[
+        'pycryptodome',  # Encryption - AES can also be provided via PyCrypto or pyaes
+        'requests',      # Used for Setup Wizard - Tuya IoT Platform calls
     ],
     classifiers=[
-        'Development Status :: 4 - Beta',
-
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7',
-        'Programming Language :: Python :: 3.8',
-        'Programming Language :: Python :: 3.9',
-
-        'Operating System :: OS Independent',
-        'Intended Audience :: Developers',
-
-        'Topic :: Software Development :: Libraries',
-        'Topic :: Utilities',
-        'Topic :: System :: Monitoring',
-
-        "License :: OSI Approved :: MIT License"
+        "Programming Language :: Python :: 2",
+        "Programming Language :: Python :: 3",
+        "License :: OSI Approved :: MIT License",
+        "Operating System :: OS Independent",
     ],
-    url='https://github.com/moira-alert/python-moira-client',
-    install_requires=required
 )
