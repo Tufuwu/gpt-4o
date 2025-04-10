@@ -1,40 +1,143 @@
-[![GitHub Actions](https://github.com/flask-extensions/flask_simplelogin/workflows/Tests/badge.svg)](https://github.com/flask-extensions/flask_simplelogin/actions/workflows/tests.yml)
-[![PyPI](https://img.shields.io/pypi/v/flask_simplelogin.svg?style=flat-square)](https://pypi.org/project/flask_simplelogin/)
-[![PyPI versions](https://img.shields.io/pypi/pyversions/flask_simplelogin.svg?style=flat-square)](https://pypi.org/project/flask_simplelogin/)
-[![PyPI formats](https://img.shields.io/pypi/format/flask_simplelogin.svg?style=flat-square)](https://pypi.org/project/flask_simplelogin/)
-[![Flask](https://img.shields.io/badge/Flask-Extension-blue.svg?style=flat-square)](https://github.com/pallets/flask)
-[![Documentation](https://readthedocs.org/projects/flask-simple-login/badge/?version=latest)](https://flask-simple-login.readthedocs.io/en/latest/?badge=latest)
+olefile
+=======
 
-# Login Extension for Flask
+[![Test](https://github.com/decalage2/olefile/actions/workflows/test.yml/badge.svg)](https://github.com/decalage2/olefile/actions)
+[![Build Status AppVeyor](https://ci.appveyor.com/api/projects/status/github/decalage2/olefile?svg=true)](https://ci.appveyor.com/project/decalage2/olefile)
+[![codecov](https://codecov.io/gh/decalage2/olefile/branch/main/graph/badge.svg)](https://codecov.io/gh/decalage2/olefile)
+[![Documentation Status](http://readthedocs.org/projects/olefile/badge/?version=latest)](http://olefile.readthedocs.io/en/latest/?badge=latest)
+[![PyPI](https://img.shields.io/pypi/v/olefile.svg)](https://pypi.org/project/olefile/)
+[![Say Thanks!](https://img.shields.io/badge/Say%20Thanks-!-1EAEDB.svg)](https://saythanks.io/to/decalage2)
 
-The simplest way to add login to flask!
+[olefile](https://www.decalage.info/olefile) is a Python package to parse, read and write
+[Microsoft OLE2 files](http://en.wikipedia.org/wiki/Compound_File_Binary_Format)
+(also called Structured Storage, Compound File Binary Format or Compound Document File Format),
+such as Microsoft Office 97-2003 documents, vbaProject.bin in MS Office 2007+ files, Image Composer
+and FlashPix files, Outlook messages, StickyNotes, several Microscopy file formats, McAfee antivirus quarantine files,
+etc.
 
-## Top Contributors
 
-[![](https://sourcerer.io/fame/cuducos/cuducos/flask_simplelogin/images/0)](https://sourcerer.io/fame/cuducos/cuducos/flask_simplelogin/links/0)[![](https://sourcerer.io/fame/cuducos/cuducos/flask_simplelogin/images/1)](https://sourcerer.io/fame/cuducos/cuducos/flask_simplelogin/links/1)[![](https://sourcerer.io/fame/cuducos/cuducos/flask_simplelogin/images/2)](https://sourcerer.io/fame/cuducos/cuducos/flask_simplelogin/links/2)[![](https://sourcerer.io/fame/cuducos/cuducos/flask_simplelogin/images/3)](https://sourcerer.io/fame/cuducos/cuducos/flask_simplelogin/links/3)[![](https://sourcerer.io/fame/cuducos/cuducos/flask_simplelogin/images/4)](https://sourcerer.io/fame/cuducos/cuducos/flask_simplelogin/links/4)[![](https://sourcerer.io/fame/cuducos/cuducos/flask_simplelogin/images/5)](https://sourcerer.io/fame/cuducos/cuducos/flask_simplelogin/links/5)[![](https://sourcerer.io/fame/cuducos/cuducos/flask_simplelogin/images/6)](https://sourcerer.io/fame/cuducos/cuducos/flask_simplelogin/links/6)[![](https://sourcerer.io/fame/cuducos/cuducos/flask_simplelogin/images/7)](https://sourcerer.io/fame/cuducos/cuducos/flask_simplelogin/links/7)
+**Quick links:** [Home page](https://www.decalage.info/olefile) -
+[Download/Install](http://olefile.readthedocs.io/en/latest/Install.html) -
+[Documentation](http://olefile.readthedocs.io/en/latest) -
+[Report Issues/Suggestions/Questions](https://github.com/decalage2/olefile/issues) -
+[Contact the author](https://www.decalage.info/contact) -
+[Repository](https://github.com/decalage2/olefile) -
+[Updates on Twitter](https://twitter.com/decalage2)
 
-Add yourself, send a PR!
 
-## How it works
+News
+----
 
-First install it from [PyPI](https://pypi.org/project/flask_simplelogin/).
+Follow all updates and news on Twitter: <https://twitter.com/decalage2>
 
-> `pip install flask_simplelogin`
+- **2018-09-09 v0.46**: OleFileIO can now be used as a context manager
+(with...as), to close the file automatically
+(see [doc](https://olefile.readthedocs.io/en/latest/Howto.html#open-an-ole-file-from-disk)).
+Improved handling of malformed files, fixed several bugs.
+- 2018-01-24 v0.45: olefile can now overwrite streams of any size, improved handling of malformed files,
+fixed several [bugs](https://github.com/decalage2/olefile/milestone/4?closed=1), end of support for Python 2.6 and 3.3.
+- 2017-01-06 v0.44: several bugfixes, removed support for Python 2.5 (olefile2),
+added support for incomplete streams and incorrect directory entries (to read malformed documents),
+added getclsid, improved [documentation](http://olefile.readthedocs.io/en/latest) with API reference.
+- 2017-01-04: moved the documentation to [ReadTheDocs](http://olefile.readthedocs.io/en/latest)
+- 2016-05-20: moved olefile repository to [GitHub](https://github.com/decalage2/olefile)
+- 2016-02-02 v0.43: fixed issues [#26](https://github.com/decalage2/olefile/issues/26)
+    and [#27](https://github.com/decalage2/olefile/issues/27),
+    better handling of malformed files, use python logging.
+- see [changelog](https://github.com/decalage2/olefile/blob/master/CHANGELOG.md) for more detailed information and
+the latest changes.
 
-```python
-from flask import Flask
-from flask_simplelogin import SimpleLogin
+Download/Install
+----------------
 
-app = Flask(__name__)
-SimpleLogin(app)
-```
+If you have pip or setuptools installed (pip is included in Python 2.7.9+), you may simply run **pip install olefile**
+or **easy_install olefile** for the first installation.
 
-## **That's it!**
+To update olefile, run **pip install -U olefile**.
 
-Now you have `/login` and `/logout` routes in your application.
+Otherwise, see http://olefile.readthedocs.io/en/latest/Install.html
 
-The username defaults to `admin` and the password defaults to `secret` (yeah that's not clever, let's see how to change it)
+Features
+--------
 
-![Login Screen](/login_screen.png)
+- Parse, read and write any OLE file such as Microsoft Office 97-2003 legacy document formats (Word .doc, Excel .xls,
+    PowerPoint .ppt, Visio .vsd, Project .mpp), Image Composer and FlashPix files, Outlook messages, StickyNotes,
+    Zeiss AxioVision ZVI files, Olympus FluoView OIB files, etc
+- List all the streams and storages contained in an OLE file
+- Open streams as files
+- Parse and read property streams, containing metadata of the file
+- Portable, pure Python module, no dependency
 
-Check the [documentation](https://flask-simple-login.readthedocs.io/en/latest/?badge=latest) for more details!
+olefile can be used as an independent package or with PIL/Pillow.
+
+olefile is mostly meant for developers. If you are looking for tools to analyze OLE files or to extract data (especially
+for security purposes such as malware analysis and forensics), then please also check my
+[python-oletools](https://www.decalage.info/python/oletools), which are built upon olefile and provide a higher-level interface.
+
+
+Documentation
+-------------
+
+Please see the [online documentation](http://olefile.readthedocs.io/en/latest) for more information.
+
+
+## Real-life examples ##
+
+A real-life example: [using OleFileIO_PL for malware analysis and forensics](http://blog.gregback.net/2011/03/using-remnux-for-forensic-puzzle-6/).
+
+See also [this paper](https://computer-forensics.sans.org/community/papers/gcfa/grow-forensic-tools-taxonomy-python-libraries-helpful-forensic-analysis_6879) about python tools for forensics, which features olefile.
+
+
+License
+-------
+
+olefile (formerly OleFileIO_PL) is copyright (c) 2005-2023 Philippe Lagadec
+([https://www.decalage.info](https://www.decalage.info))
+
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification,
+are permitted provided that the following conditions are met:
+
+ * Redistributions of source code must retain the above copyright notice, this
+   list of conditions and the following disclaimer.
+ * Redistributions in binary form must reproduce the above copyright notice,
+   this list of conditions and the following disclaimer in the documentation
+   and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+
+----------
+
+olefile is based on source code from the OleFileIO module of the Python Imaging Library (PIL) published by Fredrik
+Lundh under the following license:
+
+The Python Imaging Library (PIL) is
+
+- Copyright (c) 1997-2009 by Secret Labs AB
+- Copyright (c) 1995-2009 by Fredrik Lundh
+
+By obtaining, using, and/or copying this software and/or its associated documentation, you agree that you have read,
+understood, and will comply with the following terms and conditions:
+
+Permission to use, copy, modify, and distribute this software and its associated documentation for any purpose and
+without fee is hereby granted, provided that the above copyright notice appears in all copies, and that both that
+copyright notice and this permission notice appear in supporting documentation, and that the name of Secret Labs AB or
+the author not be used in advertising or publicity pertaining to distribution of the software without specific, written
+prior permission.
+
+SECRET LABS AB AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES
+OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL SECRET LABS AB OR THE AUTHOR BE LIABLE FOR ANY SPECIAL, INDIRECT OR
+CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF
+CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
+SOFTWARE.
