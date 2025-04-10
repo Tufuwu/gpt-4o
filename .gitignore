@@ -1,4 +1,6 @@
-venv/
-__pycache__/
-*.swp
-.coverage
+venv
+.vscode
+__pycache__
+
+apks
+config.py
