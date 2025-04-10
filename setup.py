@@ -1,39 +1,61 @@
-#!/usr/bin/env python
-"""Installation script."""
-try:
-    from setuptools import setup
-except ImportError:
-    from distutils.core import setup
+from setuptools import setup
 
-import ast
-import codecs
 import os
-import re
 
+requirements_filename = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), 'requirements.txt')
 
-CURRENT_DIR = os.path.dirname(__file__)
+with open(requirements_filename) as fd:
+    install_requires = [i.strip() for i in fd.readlines()]
 
+requirements_dev_filename = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), 'requirements-dev.txt')
 
-def get_long_description():
-    readme_path = os.path.join(CURRENT_DIR, "README.md")
-    with codecs.open(readme_path, encoding="utf8") as ld_file:
-        return ld_file.read()
+with open(requirements_filename) as fd:
+    tests_require = [i.strip() for i in fd.readlines()]
 
+long_description_filename = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), 'README.md')
 
-def get_version():
-    pydot_py = os.path.join(CURRENT_DIR, "src", "pydot", "__init__.py")
-    _version_re = re.compile(r"__version__\s+=\s+(?P<version>.*)")
-    with codecs.open(pydot_py, "r", encoding="utf8") as f:
-        match = _version_re.search(f.read())
-        version = match.group("version") if match is not None else '"unknown"'
-    return str(ast.literal_eval(version))
-
+with open(long_description_filename) as fd:
+    long_description = fd.read()
 
 setup(
-    name="pydot",
-    version=get_version(),
-    package_dir={"": "src"},
-    packages=["pydot"],
-    long_description=get_long_description(),
-    long_description_content_type="text/markdown",
+    name='fierce',
+    version='1.4.0',
+    description='A DNS reconnaissance tool for locating non-contiguous IP space.',
+    long_description=long_description,
+    long_description_content_type='text/markdown',
+    url='https://github.com/mschwager/fierce',
+    packages=['fierce'],
+    package_dir={'fierce': 'fierce'},
+    license='GPLv3',
+    classifiers=[
+        'Environment :: Console',
+        'Intended Audience :: Information Technology',
+        'Intended Audience :: System Administrators',
+        'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
+        'Operating System :: MacOS :: MacOS X',
+        'Operating System :: Microsoft :: Windows',
+        'Operating System :: POSIX',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
+        'Topic :: Security',
+    ],
+    install_requires=install_requires,
+    tests_require=tests_require,
+    python_requires='>=3.0',
+    entry_points={
+        'console_scripts': [
+            'fierce = fierce.fierce:main',
+        ],
+    },
+    package_data={
+        'fierce': [
+            'lists/*.txt',
+        ],
+    },
 )
