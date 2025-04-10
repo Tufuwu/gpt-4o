@@ -1,123 +1,65 @@
-===================
-pytest-deadfixtures
-===================
+|logo|
 
-.. image:: https://img.shields.io/badge/code%20style-black-000000.svg
-    :target: https://github.com/python/black
-    :alt: Black
+|Build Status|
 
-.. image:: https://travis-ci.org/jllorencetti/pytest-deadfixtures.svg?branch=main
-    :target: https://travis-ci.org/jllorencetti/pytest-deadfixtures
-    :alt: See Build Status on Travis CI
+Streamparse lets you run Python code against real-time streams of data via
+Apache Storm.  With streamparse you can create Storm bolts and spouts in
+Python without having to write a single line of Java.  It also provides handy
+CLI utilities for managing Storm clusters and projects.
 
-A simple plugin to list unused or duplicated fixtures in a pytest suite.
+The Storm/streamparse combo can be viewed as a more robust alternative to Python
+worker-and-queue systems, as might be built atop frameworks like Celery and RQ.
+It offers a way to do "real-time map/reduce style computation" against live
+streams of data. It can also be a powerful way to scale long-running, highly
+parallel Python processes in production.
 
-----
+|Demo|
 
-Features
---------
+Documentation
+-------------
 
-* List unused fixtures in your tests
-* List duplicated fixtures
+* `HEAD <http://streamparse.readthedocs.org/en/master/>`_
+* `Stable <http://streamparse.readthedocs.org/en/stable/>`_
 
+User Group
+----------
 
-Installation
+Follow the project's progress, get involved, submit ideas and ask for help via
+our Google Group, `streamparse@googlegroups.com <https://groups.google.com/forum/#!forum/streamparse>`__.
+
+Contributors
 ------------
 
-You can install "pytest-deadfixtures" via `pip`_ from `PyPI`_::
+Alphabetical, by last name:
 
-    $ pip install pytest-deadfixtures
+-  Dan Blanchard (`@dsblanch <https://twitter.com/dsblanch>`__)
+-  Keith Bourgoin (`@kbourgoin <https://twitter.com/kbourgoin>`__)
+-  Arturo Filastò (`@hellais <https://github.com/hellais>`__)
+-  Jeffrey Godwyll (`@rey12rey <https://twitter.com/rey12rey>`__)
+-  Daniel Hodges (`@hodgesds <https://github.com/hodgesds>`__)
+-  Wieland Hoffmann (`@mineo <https://github.com/mineo>`__)
+-  Tim Hopper (`@tdhopper <https://twitter.com/tdhopper>`__)
+-  Omer Katz (`@thedrow <https://github.com/thedrow>`__)
+-  Aiyesha Ma (`@Aiyesha <https://github.com/Aiyesha>`__)
+-  Andrew Montalenti (`@amontalenti <https://twitter.com/amontalenti>`__)
+-  Rohit Sankaran (`@roadhead <https://twitter.com/roadhead>`__)
+-  Viktor Shlapakov (`@vshlapakov <https://github.com/vshlapakov>`__)
+-  Mike Sukmanowsky (`@msukmanowsky <https://twitter.com/msukmanowsky>`__)
+-  Cody Wilbourn (`@codywilbourn <https://github.com/codywilbourn>`__)
+-  Curtis Vogt (`@omus <https://github.com/omus>`__)
 
-Usage
------
+Changelog
+---------
 
-Important
-*********
+See the `releases <https://github.com/Parsely/streamparse/releases>`__ page on
+GitHub.
 
-The `--dead-fixtures` option will not run your tests and it's also sensible for errors in the pytest collection step.
-If you are using as part of you CI process the recommended way is to run it after the default test run. For example::
-
-    script:
-      - pytest
-      - pytest --dead-fixtures
-
-
-Listing unused fixtures
-***********************
-
-Just run 'pytest' with an extra option '--dead-fixtures'::
-
-    $ pytest --dead-fixtures
-    ============================= test session starts ==============================
-    (hidden for brevity)
-
-    Hey there, I believe the following fixture(s) are not being used:
-    Fixture name: some_fixture, location: test_write_docs_when_verbose.py:5
-
-    ========================= no tests ran in 0.00 seconds =========================
-
-Using some level of verbosity will also print the docstring of each fixture::
-
-    $ pytest --dead-fixtures -v
-    ============================= test session starts ==============================
-    (hidden for brevity)
-
-    Hey there, I believe the following fixture(s) are not being used:
-    Fixture name: some_fixture, location: test_write_docs_when_verbose.py:5
-        Blabla fixture docs
-
-    ========================= no tests ran in 0.00 seconds =========================
-
-Listing repeated fixtures
-*************************
-
-Now that you removed every unused fixture of your test suite, what if you want to go an extra mile?
-
-An important note about this is that it uses the fixture return value to verify if two or more fixtures are equal.
-
-This means **fixtures without a truthy return value will be skipped**.
-
-You should use this as a hint only, verify that the functionality provided by both fixtures are really repeated before deleting one of them.
-
-Just run 'pytest' with an extra option '--dup-fixtures', unlike the '--dead-fixtures' option, it'll normally run you tests::
-
-    $ pytest --dup-fixtures
-    ======================================================================================================================== test session starts ========================================================================================================================
-    (hidden for brevity)
-
-    tests/test_deadfixtures.py ........
-
-    You may have some duplicate fixtures:
-    Fixture name: someclass_fixture, location: test_repeated_fixtures.py:12
-    Fixture name: someclass_samefixture, location: test_repeated_fixtures.py:17
-
-
-Projects using it
------------------
-
-- `wemake-django-template`_
-
-Contributing
-------------
-Contributions are very welcome. Tests can be run with `tox`_, please ensure
-the coverage at least stays the same before you submit a pull request.
-
-License
+Roadmap
 -------
 
-Distributed under the terms of the `MIT`_ license, 'pytest-deadfixtures' is free and open source software
+See the `Roadmap <https://github.com/Parsely/streamparse/wiki/Roadmap>`__.
 
-
-Issues
-------
-
-If you encounter any problems, please `file an issue`_ along with a detailed description.
-
-.. _`@jllorencetti`: https://github.com/jllorencetti
-.. _`MIT`: http://opensource.org/licenses/MIT
-.. _`file an issue`: https://github.com/jllorencetti/pytest-deadfixtures/issues
-.. _`pytest`: https://github.com/pytest-dev/pytest
-.. _`tox`: https://tox.readthedocs.io/en/latest/
-.. _`pip`: https://pypi.python.org/pypi/pip/
-.. _`PyPI`: https://pypi.python.org/pypi
-.. _`wemake-django-template`: https://github.com/wemake-services/wemake-django-template
+.. |logo| image:: https://raw.githubusercontent.com/Parsely/streamparse/master/doc/source/images/streamparse-logo.png
+.. |Build Status| image:: https://travis-ci.org/Parsely/streamparse.svg?branch=master
+   :target: https://travis-ci.org/Parsely/streamparse
+.. |Demo| image:: https://raw.githubusercontent.com/Parsely/streamparse/master/doc/source/images/quickstart.gif
