@@ -1,75 +1,83 @@
-import codecs
-import os
+#!/usr/bin/env python
+"""
+Copyright 2014-2020 Parsely, Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+"""
 import re
 
-from setuptools import Command, setup
+from setuptools import setup, find_packages
 
-BASE_PATH = os.path.abspath(os.path.dirname(__file__))
-
-
-def read(fname):
-    file_path = os.path.join(os.path.dirname(__file__), fname)
-    return codecs.open(file_path, encoding="utf-8").read()
-
-
+# Get version without importing, which avoids dependency issues
 def get_version():
-    changes_path = os.path.join(BASE_PATH, "CHANGES.rst")
-    regex = r"^#*\s*(?P<version>[0-9]+\.[0-9]+(\.[0-9]+)?)$"
-    with codecs.open(changes_path, encoding="utf-8") as changes_file:
-        for line in changes_file:
-            res = re.match(regex, line)
-            if res:
-                return res.group("version")
-    return "0.0.0"
+    with open("streamparse/version.py") as version_file:
+        return re.search(
+            r"""__version__\s+=\s+(['"])(?P<version>.+?)\1""", version_file.read()
+        ).group("version")
 
 
-version = get_version()
+def readme():
+    """ Returns README.rst contents as str """
+    with open("README.rst") as f:
+        return f.read()
 
 
-class VersionCommand(Command):
-    description = "print current library version"
-    user_options = []
+install_requires = [
+    l.split("#")[0].strip()
+    for l in open("requirements.txt").readlines()
+    if not l.startswith(("#", "-"))
+]
 
-    def initialize_options(self):
-        pass
-
-    def finalize_options(self):
-        pass
-
-    def run(self):
-        print(version)
-
+tests_require = ["graphviz", "pytest"]
 
 setup(
-    name="pytest-deadfixtures",
-    version=version,
-    author="João Luiz Lorencetti",
-    author_email="me@dirtycoder.net",
-    maintainer="João Luiz Lorencetti",
-    maintainer_email="me@dirtycoder.net",
-    license="MIT",
-    url="https://github.com/jllorencetti/pytest-deadfixtures",
-    description="A simple plugin to list unused fixtures in pytest",
-    long_description=read("README.rst"),
-    py_modules=["pytest_deadfixtures"],
-    install_requires=["pytest>=3.0.0"],
+    name="streamparse",
+    version=get_version(),
+    author="Parsely, Inc.",
+    author_email="hello@parsely.com",
+    url="https://github.com/Parsely/streamparse",
+    description=(
+        "streamparse lets you run Python code against real-time "
+        "streams of data. Integrates with Apache Storm."
+    ),
+    long_description=readme(),
+    license="Apache License 2.0",
+    packages=find_packages(),
+    entry_points={
+        "console_scripts": [
+            "sparse = streamparse.cli.sparse:main",
+            "streamparse = streamparse.cli.sparse:main",
+            "streamparse_run = streamparse.run:main",
+        ]
+    },
+    install_requires=install_requires,
+    tests_require=tests_require,
+    extras_require={
+        "test": tests_require,
+        "all": install_requires + tests_require,
+        "docs": ["sphinx"] + tests_require,
+    },
+    zip_safe=False,
+    include_package_data=True,
     classifiers=[
-        "Development Status :: 5 - Production/Stable",
-        "Framework :: Pytest",
-        "Intended Audience :: Developers",
-        "Topic :: Software Development :: Testing",
+        "License :: OSI Approved :: Apache Software License",
         "Programming Language :: Python",
         "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
-        "Programming Language :: Python :: 3.10",
-        "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: Implementation :: CPython",
         "Programming Language :: Python :: Implementation :: PyPy",
-        "Operating System :: OS Independent",
-        "License :: OSI Approved :: MIT License",
     ],
-    cmdclass={"version": VersionCommand},
-    entry_points={"pytest11": ["deadfixtures = pytest_deadfixtures"]},
 )
