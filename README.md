@@ -1,104 +1,101 @@
-rospy_message_converter
-=======================
+![](http://media.charlesleifer.com/blog/photos/scout-logo.png)
 
-Rospy_message_converter is a lightweight ROS package and Python library to
-convert from Python dictionaries and JSON messages to rospy messages, and vice
-versa.
+[scout](https://scout.readthedocs.io/en/latest/) is a RESTful search server
+written in Python. The search is powered by [SQLite's full-text search extension](http://sqlite.org/fts3.html),
+and the web application utilizes the [Flask](http://flask.pocoo.org) framework.
 
-ROS 1 and ROS 2 branches
-------------------------
+Scout aims to be a lightweight, RESTful search server in the spirit of
+[ElasticSearch](https://www.elastic.co), powered by the SQLite full-text search
+extension. In addition to search, Scout can be used as a document database,
+supporting complex filtering operations. Arbitrary files can be attached to
+documents and downloaded through the REST API.
 
-ROS 1 users should use the `master` branch. ROS 2 users should use the appropriate
-branch for their distro (`foxy`/`galactic`/`humble`/`rolling`/...).
+Scout is simple to use, simple to deploy and *just works*.
 
-Usage
------
+Features:
 
-Convert a dictionary to a ROS message
+* Multiple search indexes present in a single database.
+* RESTful design for easy indexing and searching.
+* Simple key-based authentication (optional).
+* Lightweight, low resource utilization, minimal setup required.
+* Store search content and arbitrary metadata.
+* Multiple result ranking algorithms, porter stemmer.
+* Besides full-text search, perform complex filtering based on metadata values.
+* Comprehensive unit-tests.
+* Supports SQLite [FTS4](http://sqlite.org/fts3.html).
+* [Documentation hosted on ReadTheDocs](https://scout.readthedocs.io/en/latest/).
 
-```python
-from rospy_message_converter import message_converter
-from std_msgs.msg import String
-dictionary = { 'data': 'Howdy' }
-message = message_converter.convert_dictionary_to_ros_message('std_msgs/String', dictionary)
+![](https://api.travis-ci.org/coleifer/scout.svg?branch=master)
+
+## Installation
+
+Scout can be installed from PyPI using `pip` or from source using `git`. Should
+you install from PyPI you will run the latest version, whereas installing from
+`git` ensures you have the latest changes.
+
+Alternatively, you can run `scout` using [docker](https://www.docker.com/) and
+the provided [Dockerfile](https://github.com/coleifer/scout/blob/master/docker/Dockerfile).
+
+Installation using pip:
+
+```console
+$ pip install scout
 ```
 
-Convert a ROS message to a dictionary
+You can also install the latest `master` branch using pip:
 
-```python
-from rospy_message_converter import message_converter
-from std_msgs.msg import String
-message = String(data = 'Howdy')
-dictionary = message_converter.convert_ros_message_to_dictionary(message)
+```console
+$ pip install -e git+https://github.com/coleifer/scout.git#egg=scout
 ```
 
-Convert JSON to a ROS message
+If you wish to install from source, first clone the code and run `setup.py install`:
 
-```python
-from rospy_message_converter import json_message_converter
-from std_msgs.msg import String
-json_str = '{"data": "Hello"}'
-message = json_message_converter.convert_json_to_ros_message('std_msgs/String', json_str)
+```console
+$ git clone https://github.com/coleifer/scout.git
+$ cd scout/
+$ python setup.py install
 ```
 
-Convert a ROS message to JSON
+Using either of the above methods will also ensure the project's Python
+dependencies are installed: [flask](http://flask.pocoo.org) and
+[peewee](http://docs.peewee-orm.com).
 
-```python
-from rospy_message_converter import json_message_converter
-from std_msgs.msg import String
-message = String(data = 'Hello')
-json_str = json_message_converter.convert_ros_message_to_json(message)
+[Check out the documentation](https://scout.readthedocs.io/en/latest/) for more information about the project.
+
+## Running scout
+
+If you installed using `pip`, you should be able to simply run:
+
+```console
+$ scout /path/to/search-index.db
 ```
 
-Test
-----
+If you've just got a copy of the source code, you can run:
 
-To run the tests:
-
-```bash
-catkin_make test
+```console
+$ python scout/ /path/to/search-index.db
 ```
 
-pre-commit Formatting Checks
-----------------------------
+## Docker
 
-This repo has a [pre-commit](https://pre-commit.com/) check that runs in CI.
-You can use this locally and set it up to run automatically before you commit
-something. To install, use pip:
+To run scout using docker, you can use the provided Dockerfile or simply pull
+the `coleifer/scout` image from dockerhub:
 
-```bash
-pip3 install --user pre-commit
+```console
+
+$ docker run -it --rm -p 9004:9004 coleifer/scout
+# scout is now running on 0.0.0.0:9004
 ```
 
-To run over all the files in the repo manually:
+Build your own image locally and run it:
 
-```bash
-pre-commit run -a
+```console
+
+$ cd scout/docker
+$ docker build -t scout .
+$ docker run -d \
+    --name my-scout-server \
+    -p 9004:9004 \
+    -v scout-data:/data \
+    scout
 ```
-
-To run pre-commit automatically before committing in the local repo, install the git hooks:
-
-```bash
-pre-commit install
-```
-
-
-License
--------
-
-Project is released under the BSD license.
-
-GitHub actions - Continuous Integration
----------------------------------------
-
-[![Build Status](https://github.com/DFKI-NI/rospy_message_converter/actions/workflows/github-actions.yml/badge.svg)](https://github.com/DFKI-NI/rospy_message_converter/actions/workflows/github-actions.yml/)
-
-
-ROS Buildfarm
--------------
-
-|           | binary deb | source deb | devel | doc |
-|-----------|------------|------------|-------|-----|
-| kinetic | [![Build Status](http://build.ros.org/buildStatus/icon?job=Kbin_uX64__rospy_message_converter__ubuntu_xenial_amd64__binary)](http://build.ros.org/job/Kbin_uX64__rospy_message_converter__ubuntu_xenial_amd64__binary/) | [![Build Status](http://build.ros.org/buildStatus/icon?job=Ksrc_uX__rospy_message_converter__ubuntu_xenial__source)](http://build.ros.org/job/Ksrc_uX__rospy_message_converter__ubuntu_xenial__source/) | [![Build Status](http://build.ros.org/buildStatus/icon?job=Kdev__rospy_message_converter__ubuntu_xenial_amd64)](http://build.ros.org/job/Kdev__rospy_message_converter__ubuntu_xenial_amd64) | [![Build Status](http://build.ros.org/buildStatus/icon?job=Kdoc__rospy_message_converter__ubuntu_xenial_amd64)](http://build.ros.org/job/Kdoc__rospy_message_converter__ubuntu_xenial_amd64) |
-| melodic | [![Build Status](http://build.ros.org/buildStatus/icon?job=Mbin_uB64__rospy_message_converter__ubuntu_bionic_amd64__binary)](http://build.ros.org/job/Mbin_uB64__rospy_message_converter__ubuntu_bionic_amd64__binary) | [![Build Status](http://build.ros.org/buildStatus/icon?job=Msrc_uB__rospy_message_converter__ubuntu_bionic__source)](http://build.ros.org/job/Msrc_uB__rospy_message_converter__ubuntu_bionic__source/) | [![Build Status](http://build.ros.org/buildStatus/icon?job=Mdev__rospy_message_converter__ubuntu_bionic_amd64)](http://build.ros.org/job/Mdev__rospy_message_converter__ubuntu_bionic_amd64) | [![Build Status](http://build.ros.org/buildStatus/icon?job=Mdoc__rospy_message_converter__ubuntu_bionic_amd64)](http://build.ros.org/job/Mdoc__rospy_message_converter__ubuntu_bionic_amd64) |
-| noetic  | [![Build Status](http://build.ros.org/buildStatus/icon?job=Nbin_uF64__rospy_message_converter__ubuntu_focal_amd64__binary)](http://build.ros.org/job/Nbin_uF64__rospy_message_converter__ubuntu_focal_amd64__binary/) | [![Build Status](http://build.ros.org/buildStatus/icon?job=Nsrc_uF__rospy_message_converter__ubuntu_focal__source)](http://build.ros.org/job/Nsrc_uF__rospy_message_converter__ubuntu_focal__source/) | [![Build Status](http://build.ros.org/buildStatus/icon?job=Ndev__rospy_message_converter__ubuntu_focal_amd64)](http://build.ros.org/job/Ndev__rospy_message_converter__ubuntu_focal_amd64/) | [![Build Status](http://build.ros.org/buildStatus/icon?job=Ndoc__rospy_message_converter__ubuntu_focal_amd64)](http://build.ros.org/job/Ndoc__rospy_message_converter__ubuntu_focal_amd64/) |
